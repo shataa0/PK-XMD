@@ -45,8 +45,8 @@ cmd({
     externalAdReply: {
       title: "⚡ PK-XMD • Ping Command",
       body: `🕒 ${jtime} | 📅 ${jdate}`,
-      thumbnailUrl: 'https://telegra.ph/file/2b15df6933e44d75dcabc.jpg',
-      sourceUrl: 'https://github.com/pkdriller/PK-XMD',
+      thumbnailUrl: 'https://files.catbox.moe/fgiecg.jpg',
+      sourceUrl: 'https://github.com/mejjar00254/PK-XMD',
       mediaType: 1,
       renderLargerThumbnail: true,
       showAdAttribution: true
@@ -54,7 +54,7 @@ cmd({
     forwardingScore: 999,
     isForwarded: true,
     forwardedNewsletterMessageInfo: {
-      newsletterJid: "120363025566964657@newsletter",
+      newsletterJid: "120363288304618280@newsletter",
       newsletterName: "PK-XMD Official",
       serverMessageId: "",
     }
