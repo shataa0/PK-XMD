@@ -121,27 +121,34 @@ cmd({
 ★ . *owner*
 ★ . *script*
 ★ . *support*
-
 `.trim();
 
-  const context = {
-    quotedMessage: {
-      contactMessage: {
-        displayName: "PKDRILLER ✅", // Blue tick look
-        vcard: `BEGIN:VCARD\nVERSION:3.0\nFN:PKDRILLER\nORG:PK-XMD;\nTEL;type=CELL;type=VOICE;waid=254700000000:+254 700 000000\nEND:VCARD`,
-      },
+  // Fake verification contact
+  const fakeContact = {
+    key: {
+      fromMe: false,
+      participant: "0@s.whatsapp.net",
+      remoteJid: "status@broadcast"
     },
+    message: {
+      contactMessage: {
+        displayName: "PKDRILLER ✅",
+        vcard: `BEGIN:VCARD\nVERSION:3.0\nFN:PKDRILLER\nORG:PK-XMD;\nTEL;type=CELL;type=VOICE;waid=254700000000:+254 700 000000\nEND:VCARD`
+      }
+    }
+  };
+
+  const context = {
     isForwarded: true,
     forwardingScore: 999,
     forwardedNewsletterMessageInfo: {
       newsletterJid: "120363288304618280@newsletter",
       newsletterName: "PK-XMD Official Channel",
-      serverMessageId: 100,
+      serverMessageId: 100
     },
     externalAdReply: {
       title: "PK-XMD WhatsApp Bot",
       body: `By PKDRILLER • ${date}`,
-      thumbnailUrl: "", // Your image link here
       mediaType: 1,
       renderLargerThumbnail: false,
       showAdAttribution: false,
@@ -149,11 +156,11 @@ cmd({
     }
   };
 
-  // Send menu image with caption
+  // Send menu without thumbnail
   await Void.sendMessage(m.chat, {
     image: { url: "https://files.catbox.moe/fgiecg.jpg" },
     caption: menutext,
     contextInfo: context,
-  }, { quoted: m });
+  }, { quoted: fakeContact });
 });
-      
+  
