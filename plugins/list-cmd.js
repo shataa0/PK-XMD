@@ -1,91 +1,92 @@
-const config = require('../config')
-const { cmd, commands } = require('../command')
-const { runtime } = require('../lib/functions')
+const { cmd, commands } = require('../command');
+const { runtime } = require('../lib/functions');
+const config = require('../config');
 
 cmd({
-    pattern: "list",
-    alias: ["listcmd", "commands"],
-    desc: "Show all available commands with descriptions",
-    category: "menu",
-    react: "📜",
-    filename: __filename
-}, async (conn, mek, m, { from, reply }) => {
-    try {
-        // Count total commands and aliases
-        const totalCommands = Object.keys(commands).length
-        let aliasCount = 0
-        Object.values(commands).forEach(cmd => {
-            if (cmd.alias) aliasCount += cmd.alias.length
-        })
+  pattern: "listmenu",
+  alias: ["menu2", "help", "list"],
+  desc: "Show all bot commands and info",
+  category: "menu",
+  react: "📋",
+  filename: __filename
+}, async (client, m) => {
+  try {
+    const totalCommands = Object.keys(commands).length;
+    let aliasCount = 0;
+    const categories = [...new Set(Object.values(commands).map(c => c.category))];
+    const categorized = {};
 
-        // Get unique categories count
-        const categories = [...new Set(Object.values(commands).map(c => c.category))]
+    Object.values(commands).forEach(c => {
+      if (c.alias) aliasCount += c.alias.length;
+      if (!categorized[c.category]) categorized[c.category] = [];
+      categorized[c.category].push(c);
+    });
 
-        let menuText = `╭───『 *${config.BOT_NAME} COMMAND LIST* 』───⳹
-│
-│ *🛠️ BOT INFORMATION*
-│ • 🤖 Bot Name: ${config.BOT_NAME}
-│ • 👑 Owner: ${config.OWNER_NAME}
-│ • ⚙️ Prefix: [${config.PREFIX}]
-│ • 🌐 Platform: Heroku
-│ • 📦 Version: 4.0.0
-│ • 🕒 Runtime: ${runtime(process.uptime())}
-│
-│ *📊 COMMAND STATS*
-│ • 📜 Total Commands: ${totalCommands}
-│ • 🔄 Total Aliases: ${aliasCount}
-│ • 🗂️ Categories: ${categories.length}
-│
-╰────────────────⳹\n`
+    let text = `╭─〔 *📋 PK-XMD BOT MENU* 〕─⬣\n`
+      + `│\n`
+      + `├ 🤖 *Bot Name:* PK-XMD\n`
+      + `├ 👑 *Owner:* ${config.OWNER_NAME || 'Private'}\n`
+      + `├ ⏱ *Uptime:* ${runtime(process.uptime())}\n`
+      + `├ 💻 *Platform:* Heroku\n`
+      + `├ 📦 *Version:* 4.0.0\n`
+      + `│\n`
+      + `├ 📊 *Total Commands:* ${totalCommands}\n`
+      + `├ 🧩 *Total Aliases:* ${aliasCount}\n`
+      + `├ 🗂️ *Categories:* ${categories.length}\n`
+      + `╰────────────────────⬣\n\n`;
 
-        // Organize commands by category
-        const categorized = {}
-        categories.forEach(cat => {
-            categorized[cat] = Object.values(commands).filter(c => c.category === cat)
-        })
-
-        // Generate menu for each category
-        for (const [category, cmds] of Object.entries(categorized)) {
-            menuText += `╭───『 *${category.toUpperCase()}* 』───⳹
-│ • 📂 Commands: ${cmds.length}
-│ • 🔄 Aliases: ${cmds.reduce((a, c) => a + (c.alias ? c.alias.length : 0), 0)}
-│
-`
-
-            cmds.forEach(c => {
-                menuText += `┃▸📄 COMMAND: .${c.pattern}\n`
-                menuText += `┃▸❕ ${c.desc || 'No description available'}\n`
-                if (c.alias && c.alias.length > 0) {
-                    menuText += `┃▸🔹 Aliases: ${c.alias.map(a => `.${a}`).join(', ')}\n`
-                }
-                if (c.use) {
-                    menuText += `┃▸💡 Usage: ${c.use}\n`
-                }
-                menuText += `│\n`
-            })
-            
-            menuText += `╰────────────────⳹\n`
-        }
-
-        menuText += `\n📝 *Note*: Use ${config.PREFIX}help <command> for detailed help\n`
-        menuText += `> ${config.DESCRIPTION}`
-
-        await conn.sendMessage(
-            from,
-            {
-                image: { url: config.MENU_IMAGE_URL || 'https://files.catbox.moe/7zfdcq.jpg' },
-                caption: menuText,
-                contextInfo: {
-                    mentionedJid: [m.sender],
-                    forwardingScore: 999,
-                    isForwarded: true
-                }
-            },
-            { quoted: mek }
-        )
-
-    } catch (e) {
-        console.error('Command List Error:', e)
-        reply(`❌ Error generating command list: ${e.message}`)
+    for (const [category, cmds] of Object.entries(categorized)) {
+      text += `╭─〔 *${category.toUpperCase()}* 〕─⬣\n`;
+      cmds.forEach(c => {
+        text += `├ 📌 *.${c.pattern}*\n`;
+        if (c.desc) text += `│ 📄 ${c.desc}\n`;
+        if (c.alias && c.alias.length > 0) text += `│ 🔁 ${c.alias.map(a => `.${a}`).join(', ')}\n`;
+        if (c.use) text += `│ 💡 Usage: ${c.use}\n`;
+      });
+      text += `╰────────────────────⬣\n\n`;
     }
-})
+
+    text += `> 🔖 *Powered by Pkdriller*\n`;
+
+    // Send menu
+    await client.sendMessage(m.chat, {
+      text,
+      quoted: {
+        key: {
+          fromMe: false,
+          participant: "0@s.whatsapp.net",
+          remoteJid: "120363288304618280@newsletter",
+        },
+        message: {
+          contactMessage: {
+            displayName: "PK-XMD",
+            vcard: `BEGIN:VCARD\nVERSION:3.0\nN:PK-XMD;;;\nFN:PK-XMD\nitem1.TEL;waid=254700000000:+254700000000\nitem1.X-ABLabel:Mobile\nEND:VCARD`,
+          },
+        },
+      },
+      contextInfo: {
+        externalAdReply: {
+          title: "PK-XMD WhatsApp Bot",
+          body: "Menu generated by PK-XMD",
+          mediaType: 1,
+          previewType: "NONE",
+          renderLargerThumbnail: false,
+          sourceUrl: "https://github.com/pkdriller/PK-XMD"
+        },
+        forwardingScore: 999,
+        isForwarded: true,
+        forwardedNewsletterMessageInfo: {
+          newsletterJid: "120363288304618280@newsletter",
+          newsletterName: "PK-XMD Official"
+        }
+      }
+    });
+
+  } catch (err) {
+    console.error('Error in listmenu:', err);
+    await client.sendMessage(m.chat, {
+      text: `❌ Failed to generate menu:\n${err.message || err}`
+    });
+  }
+});
+            
