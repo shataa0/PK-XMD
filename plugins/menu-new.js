@@ -1,160 +1,162 @@
-const fs = require("fs");
-const moment = require("moment-timezone");
-const config = require("../config");
-const { cmd } = require("../lib");
-const path = require("path");
-
-// Fake Verified Contact vCard
-const fakeVcard = {
-  key: {
-    fromMe: false,
-    participant: "0@s.whatsapp.net",
-    ...(config.fakeNewsletterJid
-      ? { remoteJid: config.fakeNewsletterJid }
-      : {}),
-  },
-  message: {
-    contactMessage: {
-      displayName: "WhatsApp Verified",
-      vcard:
-        "BEGIN:VCARD\n" +
-        "VERSION:3.0\n" +
-        "FN:WhatsApp Verified\n" +
-        "ORG:WhatsApp\n" +
-        "TEL;type=CELL;type=VOICE;waid=447777777777:+44 7777 777777\n" +
-        "END:VCARD",
-      jpegThumbnail: fs.readFileSync("./media/logo.jpg"),
-    },
-  },
-};
+const { cmd } = require('../command')
+const config = require('../config')
+const moment = require('moment-timezone')
+const axios = require('axios')
 
 cmd({
   pattern: "menu",
-  desc: "Display full command list",
-  category: "system",
-  use: "",
-  filename: __filename,
-}, async (msg) => {
-  const time = moment().tz("Africa/Nairobi").format("HH:mm:ss");
-  const date = moment().tz("Africa/Nairobi").format("dddd, MMMM Do YYYY");
+  alias: ["help"],
+  desc: "Show full command list",
+  category: "general",
+  filename: __filename
+}, async (message) => {
+  const { senderName } = message
+  const time = moment().tz(config.TIME_ZONE).format("HH:mm:ss")
+  const date = moment().tz(config.TIME_ZONE).format("DD/MM/YYYY")
+  const runtime = function(seconds) {
+    seconds = Number(seconds)
+    const d = Math.floor(seconds / (3600 * 24))
+    const h = Math.floor(seconds % (3600 * 24) / 3600)
+    const m = Math.floor(seconds % 3600 / 60)
+    const s = Math.floor(seconds % 60)
+    return `${d}d ${h}h ${m}m ${s}s`
+  }
 
-  const menuText = `
-*📅 Date:* ${date}
-⏰ *Time:* ${time}
-🤖 *Bot:* PK-XMD
-👤 *Owner:* @${msg.sender.split("@")[0]}
+  const uptime = runtime(process.uptime())
 
-┏━━━❰  🎵 *DOWNLOADER*  ❱━━━┓
-★ . *play*
-★ . *yt*
-★ . *mediafire*
-★ . *tiktok*
-★ . *fb*
-★ . *apk*
+  const thumb = await axios.get("https://files.catbox.moe/fgiecg.jpg", { responseType: 'arraybuffer' })
+  const imageBuffer = Buffer.from(thumb.data, 'binary')
 
-┏━━━❰  🧠 *AI COMMANDS*  ❱━━━┓
+  const text = `
+╭─────────────◆
+│  *PK-XMD - MULTI DEVICE*
+├─────────────────────
+│ 🤖 *Name:* ${config.BOT_NAME}
+│ 🧑‍💻 *Owner:* ${config.OWNER_NAME}
+│ 🌐 *Uptime:* ${uptime}
+│ 🗓️ *Date:* ${date}
+│ 🕒 *Time:* ${time}
+╰─────────────◆
+
+🧠 *AI COMMANDS*
 ★ . *ai*
 ★ . *gpt*
-★ . *deepseek*
 ★ . *openai*
+★ . *deepseek*
 
-┏━━━❰  🎨 *LOGO MAKER*  ❱━━━┓
-★ . *neon*
-★ . *glitch*
-★ . *blackpink*
-★ . *marvel*
-★ . *joker*
+🎵 *DOWNLOADER*
+★ . *play*
+★ . *yt*
+★ . *ytmp4*
+★ . *ytmp3*
+★ . *mediafire*
+★ . *apk*
+★ . *fb*
+★ . *tiktok*
+★ . *ig*
 
-┏━━━❰  🎭 *FUN ZONE*  ❱━━━┓
+🔄 *CONVERTERS*
+★ . *toimg*
+★ . *tomp3*
+★ . *sticker*
+★ . *photo*
+
+🌸 *ANIME ZONE*
+★ . *anime*
+★ . *wallpaper*
+★ . *neko*
+★ . *waifu*
+
+😂 *REACTIONS*
+★ . *kiss*
+★ . *hug*
+★ . *pat*
+★ . *cry*
+
+🧰 *UTILITIES*
+★ . *ssweb*
+★ . *shortlink*
+★ . *weather*
+★ . *calc*
+
+🎉 *FUN ZONE*
 ★ . *truth*
 ★ . *dare*
 ★ . *rate*
 ★ . *ship*
-★ . *simpcard*
 
-┏━━━❰  🖼️ *ANIME ZONE*  ❱━━━┓
-★ . *anime*
-★ . *waifu*
-★ . *neko*
-★ . *megumin*
-★ . *quote*
+🖌️ *LOGO MAKER*
+★ . *logo*
+★ . *blackpink*
+★ . *neon*
+★ . *glitch*
 
-┏━━━❰  💬 *REACT & STICKER*  ❱━━━┓
-★ . *react*
-★ . *sticker*
-★ . *emojimix*
-★ . *stickermeme*
-★ . *take*
-
-┏━━━❰  🧰 *UTILITIES*  ❱━━━┓
-★ . *calc*
-★ . *shortlink*
-★ . *readmore*
-★ . *translate*
-★ . *weather*
-
-┏━━━❰  🛠️ *CONVERTERS*  ❱━━━┓
-★ . *toimg*
-★ . *tomp3*
-★ . *toaudio*
-★ . *toptt*
-★ . *tourl*
-
-┏━━━❰  👑 *OWNER CMDS*  ❱━━━┓
-★ . *eval*
-★ . *exec*
-★ . *broadcast*
+👑 *OWNER COMMANDS*
+★ . *block*
+★ . *unblock*
 ★ . *setpp*
-★ . *shutdown*
+★ . *setbio*
+★ . *join*
 
-┏━━━❰  👥 *GROUP TOOLS*  ❱━━━┓
+👥 *GROUP TOOLS*
 ★ . *tagall*
 ★ . *promote*
 ★ . *demote*
 ★ . *hidetag*
-★ . *gpp*
-★ . *group open*
-★ . *group close*
-★ . *kick*
-★ . *add*
-★ . *gname*
-★ . *gdesc*
+★ . *antilink*
+★ . *antibot*
+★ . *group*
 
-┏━━━❰  🔐 *SYSTEM*  ❱━━━┓
-★ . *menu*
+⚙️ *SYSTEM COMMANDS*
 ★ . *ping*
+★ . *menu*
 ★ . *alive*
-★ . *uptime*
-★ . *status*
+★ . *script*
+★ . *runtime*
 
-`.trim();
+──────────────◆
+🔰 *PK-XMD | 2025*
+`
 
-  await msg.sendMessage(
-    msg.chat,
-    {
-      image: fs.readFileSync("https://files.catbox.moe/fgiecg.jpg"),
-      caption: menuText,
-      contextInfo: {
-        externalAdReply: {
-          title: "PK-XMD WHATSAPP BOT",
-          body: "MULTI DEVICE POWERED BY PKDRILLER",
-          thumbnail: fs.readFileSync("https://files.catbox.moe/fgiecg.jpg"),
-          mediaType: 1,
-          renderLargerThumbnail: true,
-          showAdAttribution: false,
-          sourceUrl: "https://github.com/mejja00254/PK-XMD",
-        },
-        forwardingScore: 9999,
-        isForwarded: true,
-        forwardedNewsletterMessageInfo: {
-          newsletterJid: config.fakeNewsletterJid || "120363288304618280@newsletter",
-          newsletterName: "PK-XMD Official",
-          serverMessageId: "",
-        },
-      },
-      quoted: fakeVcard,
+  const fakeContact = {
+    key: {
+      fromMe: false,
+      participant: "0@s.whatsapp.net",
+      remoteJid: "status@broadcast"
     },
-    { quoted: fakeVcard }
-  );
-});
-                        
+    message: {
+      contactMessage: {
+        displayName: "PK-XMD Verified Bot",
+        vcard: `BEGIN:VCARD\nVERSION:3.0\nFN:PK-XMD Verified Bot✓\nORG:PK-XMD Team;\nTEL;type=CELL;type=VOICE;waid=254700000000:+254 700 000 000\nEND:VCARD`
+      }
+    }
+  }
+
+  const contextInfo = {
+    forwardingScore: 999,
+    isForwarded: true,
+    forwardedNewsletterMessageInfo: {
+      newsletterName: "PK-XMD Broadcast",
+      newsletterJid: "120363288304618280@newsletter"
+    },
+    externalAdReply: {
+      title: "PK-XMD Multi Device Bot",
+      body: config.OWNER_NAME,
+      mediaType: 1,
+      thumbnail: imageBuffer,
+      mediaUrl: '',
+      sourceUrl: 'https://github.com/mejja00254/PK-XMD'
+    }
+  }
+
+  await message.send(
+    imageBuffer,
+    {
+      caption: text.trim(),
+      quoted: fakeContact,
+      contextInfo
+    },
+    "image"
+  )
+})
+               
