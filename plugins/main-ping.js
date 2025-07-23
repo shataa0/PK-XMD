@@ -1,74 +1,65 @@
 const axios = require("axios");
-const FormData = require('form-data');
-const fs = require('fs');
-const os = require('os');
+const FormData = require("form-data");
+const fs = require("fs");
+const os = require("os");
 const path = require("path");
 const { cmd } = require("../command");
 
 cmd({
   pattern: "tourl",
   alias: ["imgtourl", "imgurl", "url", "geturl", "upload"],
-  react: '🖇',
-  desc: "Convert media to Catbox URL",
+  desc: "Convert media to direct Catbox URL",
   category: "utility",
-  use: ".tourl [reply to media]",
-  filename: __filename
-},
-async (client, m, text, { quoted, mime, reply }) => {
+  react: "🖇",
+  filename: __filename,
+}, async (Void, m, text, { reply }) => {
   try {
-    const q = quoted || m.quoted;
-    const type = (q.msg || q).mimetype || '';
+    const quoted = m.quoted ? m.quoted : m;
+    const mime = (quoted.msg || quoted).mimetype || "";
 
-    if (!type) return reply("Please reply to an image, video or audio.");
+    if (!mime) return reply("*❌ Reply to a media file (image, video or audio) to get URL.*");
 
-    const mediaBuffer = await q.download();
-    const tempFilePath = path.join(os.tmpdir(), `pk_upload_${Date.now()}`);
+    const mediaBuffer = await quoted.download();
+    const tempFilePath = path.join(os.tmpdir(), `catbox_${Date.now()}`);
     fs.writeFileSync(tempFilePath, mediaBuffer);
 
-    let extension = '';
-    if (type.includes('jpeg')) extension = '.jpg';
-    else if (type.includes('png')) extension = '.png';
-    else if (type.includes('video')) extension = '.mp4';
-    else if (type.includes('audio')) extension = '.mp3';
-    const fileName = 'file' + extension;
+    let ext = "";
+    if (mime.includes("jpeg")) ext = ".jpg";
+    else if (mime.includes("png")) ext = ".png";
+    else if (mime.includes("video")) ext = ".mp4";
+    else if (mime.includes("audio")) ext = ".mp3";
 
+    const fileName = `upload${ext}`;
     const form = new FormData();
-    form.append('fileToUpload', fs.createReadStream(tempFilePath), fileName);
-    form.append('reqtype', 'fileupload');
+    form.append("reqtype", "fileupload");
+    form.append("fileToUpload", fs.createReadStream(tempFilePath), fileName);
 
     const res = await axios.post("https://catbox.moe/user/api.php", form, {
       headers: form.getHeaders()
     });
 
     fs.unlinkSync(tempFilePath);
-    const link = res.data;
 
-    await client.sendMessage(m.chat, {
-      text: `*✅ Uploaded Successfully*\n\n🔗 *URL:* ${link}\n📦 *Size:* ${formatBytes(mediaBuffer.length)}\n\n_Powered by Pkdriller_`,
-      quoted: {
-        key: {
-          fromMe: false,
-          participant: "0@s.whatsapp.net",
-          remoteJid: "status@broadcast"
-        },
-        message: {
-          contactMessage: {
-            displayName: "PK-XMD Verification",
-            vcard: "BEGIN:VCARD\nVERSION:3.0\nFN:PK-XMD Verified✅\nTEL;type=CELL;type=VOICE;waid=254700000000:+254700000000\nEND:VCARD"
-          }
-        }
-      },
-      contextInfo: {
-        forwardedNewsletterMessageInfo: {
-          newsletterName: "PK-XMD Bot Channel",
-          newsletterJid: "120363025316123456@newsletter"
-        }
-      }
-    });
+    if (!res.data || typeof res.data !== "string" || !res.data.startsWith("https://")) {
+      return reply("*❌ Failed to upload file. Try again later.*");
+    }
+
+    const url = res.data;
+    const size = formatBytes(mediaBuffer.length);
+    let type = "File";
+    if (mime.includes("image")) type = "Image";
+    else if (mime.includes("video")) type = "Video";
+    else if (mime.includes("audio")) type = "Audio";
+
+    return reply(
+      `✅ *${type} Uploaded Successfully!*\n\n` +
+      `🔹 *Size:* ${size}\n` +
+      `🔗 *URL:* ${url}`
+    );
 
   } catch (e) {
     console.error(e);
-    reply(`❌ Error: ${e.message || e}`);
+    return reply("*❌ Error occurred:* " + (e.message || e));
   }
 });
 
@@ -78,5 +69,4 @@ function formatBytes(bytes) {
   const sizes = ['Bytes', 'KB', 'MB', 'GB'];
   const i = Math.floor(Math.log(bytes) / Math.log(k));
   return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
-      }
-      
+}
