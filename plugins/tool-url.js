@@ -7,7 +7,7 @@ const { cmd } = require("../command");
 
 cmd({
   pattern: "tourl",
-  alias: ["imgtourl", "imgurl", "url", "geturl", "upload"],
+  alias: ["imgtourl", "imgurl", "url2", "geturl", "upload"],
   react: '🖇',
   desc: "Convert media to Catbox URL",
   category: "utility",
