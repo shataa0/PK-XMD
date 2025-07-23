@@ -128,31 +128,48 @@ cmd({
     quotedMessage: {
       contactMessage: {
         displayName: "PKDRILLER",
-        vcard: `BEGIN:VCARD\nVERSION:3.0\nFN:PKDRILLER\nORG:PK-XMD;\nTEL;type=CELL;type=VOICE;waid=254700000000:+254 700 000000\nEND:VCARD`,
-      },
+        vcard: `BEGIN:VCARD\nVERSION:3.0\nFN:PKDRILLER\nORG:PK-XMD;\nTEL;type=CELL;type=VOICE;waid=254700000000:+254 700 000000\nEND:VCARD`
+      }
     },
+    stanzaId: "777",
+    participant: "254700000000@s.whatsapp.net", // fake verified participant
+    remoteJid: "status@broadcast",
     isForwarded: true,
     forwardingScore: 999,
     forwardedNewsletterMessageInfo: {
       newsletterJid: "120363288304618280@newsletter",
       newsletterName: "PK-XMD Official Channel",
-      serverMessageId: 100,
+      serverMessageId: 100
     },
     externalAdReply: {
       title: "PK-XMD WhatsApp Bot",
       body: `By PKDRILLER • ${date}`,
-      thumbnailUrl: "https://i.imgur.com/sbSkbZS.jpg", // Your image link here
       mediaType: 1,
       renderLargerThumbnail: true,
       showAdAttribution: true,
       sourceUrl: "https://github.com/pkdriller/PK-XMD"
+      // ❌ Removed thumbnailUrl to prevent double image
     }
   };
 
-  // Send menu image with caption
   await Void.sendMessage(m.chat, {
-    image: { url: "https://files.catbox.moe/fgiecg.jpg" }, // Use your uploaded PK-XMD menu image
+    image: { url: ".https://files.catbox.moe/fgiecg.jpg" }, // your menu image
     caption: menutext,
-    contextInfo: context,
-  }, { quoted: m });
+    contextInfo: context
+  }, {
+    quoted: {
+      key: {
+        fromMe: false,
+        participant: "254700000000@s.whatsapp.net", // fake sender
+        remoteJid: "status@broadcast"
+      },
+      message: {
+        contactMessage: {
+          displayName: "PKDRILLER",
+          vcard: `BEGIN:VCARD\nVERSION:3.0\nFN:PKDRILLER\nORG:PK-XMD;\nTEL;type=CELL;type=VOICE;waid=254700000000:+254 700 000000\nEND:VCARD`,
+          jpegThumbnail: Buffer.alloc(0) // optional for tick
+        }
+      }
+    }
+  });
 });
