@@ -42,7 +42,7 @@ async (conn, m, msg, { from, reply }) => {
     `.trim();
 
     await conn.sendMessage(from, {
-      image: { url: 'https://files.catbox.moe/fgiecg.jpg' }, // your bot banner
+      image: { url: 'https://files.catbox.moe/7zfdcq.jpg' }, // main banner only
       caption,
       contextInfo: {
         forwardingScore: 999,
@@ -56,7 +56,6 @@ async (conn, m, msg, { from, reply }) => {
         externalAdReply: {
           title: "PK-XMD • Source Code",
           body: "By Pkdriller | GitHub Deployment",
-          thumbnailUrl: "https://files.catbox.moe/fgiecg.jpg",
           mediaType: 1,
           renderLargerThumbnail: true,
           showAdAttribution: false,
@@ -83,4 +82,4 @@ async (conn, m, msg, { from, reply }) => {
   }
 
 });
-        
+      
