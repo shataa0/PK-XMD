@@ -45,11 +45,11 @@ cmd({
       externalAdReply: {
         title: "PK-XMD",
         body: "Uptime Monitor by PKDRILLER",
-        thumbnailUrl: "https://i.imgur.com/BtzRZZt.jpeg",
+        thumbnailUrl: "https://files.catbox.moe/fgiecg.jpg",
         mediaType: 1,
         renderLargerThumbnail: true,
         showAdAttribution: true,
-        sourceUrl: "https://github.com/pkdriller"
+        sourceUrl: "https://github.com/mejjar00254"
       }
     }
   }, { quoted: fakeContact });
