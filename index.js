@@ -123,7 +123,7 @@ const port = process.env.PORT || 9090;
 ╭──〔 🔗 *Information* 〕  
 ├─ 🧩 *Prefix:* = ${prefix}
 ├─ 📢 *Join Channel:*  
-│    https://whatsapp.com/channel/0029VatOy2EAzNc2WcShQw1j  
+│    https://whatsapp.com/channel/0029Vad7YNyJuyA77CtIPX0x 
 ├─ 🌟 *MESSAGE DEVELOPER/OWNER+254794146821*
 │     
 ╰─🚀 *Powered by mr pkdriller*`;
