@@ -1,49 +1,60 @@
 const { cmd } = require('../command');
-const os = require("os");
+const moment = require('moment-timezone');
 const { runtime } = require('../lib/functions');
-const config = require('../config');
 
 cmd({
-    pattern: "alive",
-    alias: ["status", "online", "a"],
-    desc: "Check bot is alive or not",
-    category: "main",
-    react: "⚡",
-    filename: __filename
-},
-async (conn, mek, m, { from, sender, reply }) => {
-    try {
-        const status = `
-╭───〔 *🤖 ${config.BOT_NAME} STATUS* 〕───◉
-│✨ *Bot is Active & Online!*
+  pattern: "alive",
+  desc: "Show bot is running",
+  category: "system",
+  filename: __filename
+}, async (Void, m) => {
+  let time = moment.tz('Africa/Nairobi').format('HH:mm:ss');
+  let date = moment.tz('Africa/Nairobi').format('DD/MM/YYYY');
+  let up = runtime(process.uptime());
+
+  let message = `
+╭────[ *⚙ PK-XMD IS ALIVE ⚙* ]────╮
 │
-│🧠 *Owner:* ${config.OWNER_NAME}
-│⚡ *Version:* 4.0.0
-│📝 *Prefix:* [${config.PREFIX}]
-│📳 *Mode:* [${config.MODE}]
-│💾 *RAM:* ${(process.memoryUsage().heapUsed / 1024 / 1024).toFixed(2)}MB / ${(os.totalmem() / 1024 / 1024).toFixed(2)}MB
-│🖥️ *Host:* ${os.hostname()}
-│⌛ *Uptime:* ${runtime(process.uptime())}
-╰────────────────────◉
-> ${config.DESCRIPTION}`;
+├ 🧿 *Time:* ${time}
+├ 🗓 *Date:* ${date}
+├ 💠 *Uptime:* ${up}
+│
+╰─⭓ *Powered by Pkdriller*
+`.trim();
 
-        await conn.sendMessage(from, {
-            image: { url: config.MENU_IMAGE_URL },
-            caption: status,
-            contextInfo: {
-                mentionedJid: [m.sender],
-                forwardingScore: 1000,
-                isForwarded: true,
-                forwardedNewsletterMessageInfo: {
-                    newsletterJid: '120363354023106228@newsletter',
-                    newsletterName: 'JawadTechX',
-                    serverMessageId: 143
-                }
-            }
-        }, { quoted: mek });
-
-    } catch (e) {
-        console.error("Alive Error:", e);
-        reply(`An error occurred: ${e.message}`);
+  let vcard = {
+    key: {
+      fromMe: false,
+      participant: "0@s.whatsapp.net",
+      ...(m.chat ? { remoteJid: "status@broadcast" } : {})
+    },
+    message: {
+      contactMessage: {
+        displayName: "PK-XMD",
+        vcard: `BEGIN:VCARD\nVERSION:3.0\nFN:PK-XMD\nORG:Verified Bot;\nTEL;type=CELL;type=VOICE;waid=254700000000:+254700000000\nEND:VCARD`
+      }
     }
+  };
+
+  await Void.sendMessage(m.chat, { text: message }, {
+    quoted: vcard,
+    contextInfo: {
+      externalAdReply: {
+        title: "PK-XMD WhatsApp Bot",
+        body: "Alive & Running - Powered by Pkdriller",
+        mediaType: 1,
+        renderLargerThumbnail: false,
+        showAdAttribution: false,
+        sourceUrl: '',
+      },
+      forwardingScore: 999,
+      isForwarded: true,
+      forwardedNewsletterMessageInfo: {
+        newsletterJid: "120363288304618280@newsletter",
+        serverMessageId: "",
+        newsletterName: "PK-XMD Verified Bot"
+      }
+    }
+  });
 });
+          
