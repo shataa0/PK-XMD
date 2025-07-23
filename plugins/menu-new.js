@@ -1,24 +1,41 @@
-const { cmd } = require("../command")
-const config = require("../config")
-const axios = require("axios")
+const { cmd } = require('../command');
+const moment = require('moment-timezone');
 
 cmd({
   pattern: "menu",
-  desc: "Show full bot command menu",
+  desc: "Display full bot command list",
   category: "system",
-  use: '.menu',
-  filename: __filename
-}, async (message) => {
-  const menuImage = "https://files.catbox.moe/fgiecg.jpg"
-  const prefix = '.'
+  filename: __filename,
+}, async (Void, m, text, { prefix }) => {
+  const runtime = () => {
+    let sec = process.uptime();
+    let hrs = Math.floor(sec / 3600);
+    let mins = Math.floor((sec % 3600) / 60);
+    let secs = Math.floor(sec % 60);
+    return `${hrs}h ${mins}m ${secs}s`;
+  };
 
-  const text = `
-╭━━〔 🤖 *PK-XMD BOT MENU* 〕━━◆
-┃📅 Date: *${new Date().toLocaleDateString()}*
-┃⏰ Time: *${new Date().toLocaleTimeString()}*
-┃🤖 Bot: *PK-XMD-MD*
-┃👑 Owner: *pkdriller*
-╰━━━━━━━━━━━━━━━━━━━◆
+  const date = moment.tz("Africa/Nairobi").format("DD/MM/YYYY");
+  const time = moment.tz("Africa/Nairobi").format("HH:mm:ss");
+  const uptime = runtime();
+
+  const botName = "PK-XMD";
+  const ownerName = "PKDRILLER";
+
+  const menutext = `
+╭───〘 *${botName} MENU* 〙───
+│ 🤖 *Bot Name:* ${botName}
+│ 👑 *Owner:* ${ownerName}
+│ 📅 *Date:* ${date}
+│ ⏰ *Time:* ${time}
+│ ⚡ *Uptime:* ${uptime}
+╰────────────────────
+
+🧠 *AI COMMANDS*
+★ . *ai*
+★ . *gpt*
+★ . *deepseek*
+★ . *openai*
 
 🎵 *DOWNLOADER*
 ★ . *play*
@@ -28,107 +45,114 @@ cmd({
 ★ . *fb*
 ★ . *apk*
 
-🧠 *AI COMMANDS*
-★ . *ai*
-★ . *gpt*
-★ . *deepseek*
-★ . *openai*
-
-🌀 *CONVERTERS*
+🎧 *CONVERTERS*
 ★ . *photo*
 ★ . *mp3*
 ★ . *mp4*
 ★ . *voice*
+★ . *sticker*
+★ . *attp*
 
-😹 *FUN ZONE*
-★ . *joke*
-★ . *rate*
-★ . *meme*
-★ . *truth*
-
-📚 *UTILITIES*
-★ . *calc*
+🧩 *UTILITIES*
 ★ . *ping*
 ★ . *menu*
-★ . *alive*
+★ . *calc*
+★ . *weather*
+★ . *qrcode*
 
-💬 *REACT & ANIME*
-★ . *smile*
-★ . *blush*
-★ . *wink*
-★ . *baka*
-
-📥 *LOGO MAKER*
-★ . *logo*
-★ . *neon*
-★ . *flame*
-★ . *glitch*
-
-👮‍♂️ *OWNER COMMANDS*
+🧑‍💼 *OWNER COMMANDS*
+★ . *setpp*
 ★ . *block*
 ★ . *unblock*
-★ . *setpp*
-★ . *join*
+★ . *broadcast*
+★ . *restart*
 
 👥 *GROUP TOOLS*
 ★ . *tagall*
 ★ . *hidetag*
-★ . *kick*
 ★ . *promote*
 ★ . *demote*
 ★ . *antilink*
-★ . *antibot*
 
-⚙️ *SYSTEM*
-★ . *autoreact*
-★ . *anticall*
-★ . *autovoice*
-★ . *autostatus*
+🌌 *ANIME ZONE*
+★ . *anime*
+★ . *waifu*
+★ . *neko*
+★ . *cosplay*
+
+🤣 *FUN ZONE*
+★ . *truth*
+★ . *dare*
+★ . *fact*
+★ . *quote*
+★ . *joke*
+
+💬 *AUTOMATION*
 ★ . *autoreply*
-  `
+★ . *autovoice*
+★ . *autoreact*
+★ . *autostatus*
 
-  const vcard = {
-    displayName: "pkdriller",
-    vcard: `BEGIN:VCARD\nVERSION:3.0\nFN:PKDRILLER✓\nORG:PK-XMD;\nTEL;type=CELL;type=VOICE;waid=254718241545:+254718241545\nEND:VCARD`
-  }
+🎭 *REACT & STYLE*
+★ . *react*
+★ . *emojimix*
+★ . *style*
 
-  const fakeContact = {
-    key: {
-      fromMe: false,
-      participant: "0@s.whatsapp.net",
-      remoteJid: "status@broadcast"
-    },
-    message: {
-      contactMessage: {
-        displayName: "pkdriller",
-        vcard: vcard.vcard
-      }
-    }
-  }
+🛠️ *LOGO MAKER*
+★ . *logo*
+★ . *3dtext*
+★ . *marvel*
+★ . *neon*
+
+🎙️ *VOICE FX*
+★ . *bass*
+★ . *robot*
+★ . *deep*
+★ . *slow*
+
+📥 *STORAGE & TOOLS*
+★ . *addnote*
+★ . *getnote*
+★ . *delnote*
+★ . *listnote*
+
+📦 *SYSTEM*
+★ . *alive*
+★ . *owner*
+★ . *script*
+★ . *support*
+
+`.trim();
 
   const context = {
-    quoted: fakeContact,
-    contextInfo: {
-      forwardedNewsletterMessageInfo: {
-        newsletterJid: "120363288304618280@newsletter",
-        newsletterName: "PK-XMD UPDATES",
-        serverMessageId: ""
+    quotedMessage: {
+      contactMessage: {
+        displayName: "PKDRILLER",
+        vcard: `BEGIN:VCARD\nVERSION:3.0\nFN:PKDRILLER\nORG:PK-XMD;\nTEL;type=CELL;type=VOICE;waid=254700000000:+254 700 000000\nEND:VCARD`,
       },
-      externalAdReply: {
-        title: "PK-XMD Multi-Device Bot",
-        body: "Made by pkdriller ✓",
-        thumbnailUrl: menuImage,
-        sourceUrl: 'https://github.com/nexustech1911/PK-XMD',
-        mediaType: 1,
-        renderLargerThumbnail: true,
-        showAdAttribution: true
-      }
+    },
+    isForwarded: true,
+    forwardingScore: 999,
+    forwardedNewsletterMessageInfo: {
+      newsletterJid: "120363288304618280@newsletter",
+      newsletterName: "PK-XMD Official Channel",
+      serverMessageId: 100,
+    },
+    externalAdReply: {
+      title: "PK-XMD WhatsApp Bot",
+      body: `By PKDRILLER • ${date}`,
+      thumbnailUrl: "https://i.imgur.com/sbSkbZS.jpg", // Your image link here
+      mediaType: 1,
+      renderLargerThumbnail: true,
+      showAdAttribution: true,
+      sourceUrl: "https://github.com/pkdriller/PK-XMD"
     }
-  }
+  };
 
-  await message.send({
-    image: { url: menuImage },
-    caption: text,
-    ...context
-  })
-})
+  // Send menu image with caption
+  await Void.sendMessage(m.chat, {
+    image: { url: "https://files.catbox.moe/fgiecg.jpg" }, // Use your uploaded PK-XMD menu image
+    caption: menutext,
+    contextInfo: context,
+  }, { quoted: m });
+});
