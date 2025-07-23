@@ -1,43 +1,50 @@
-const { cmd } = require('../command');
-const moment = require('moment-timezone');
+const fs = require("fs");
+const moment = require("moment-timezone");
+const config = require("../config");
+const { cmd } = require("../lib");
+const path = require("path");
+
+// Fake Verified Contact vCard
+const fakeVcard = {
+  key: {
+    fromMe: false,
+    participant: "0@s.whatsapp.net",
+    ...(config.fakeNewsletterJid
+      ? { remoteJid: config.fakeNewsletterJid }
+      : {}),
+  },
+  message: {
+    contactMessage: {
+      displayName: "WhatsApp Verified",
+      vcard:
+        "BEGIN:VCARD\n" +
+        "VERSION:3.0\n" +
+        "FN:WhatsApp Verified\n" +
+        "ORG:WhatsApp\n" +
+        "TEL;type=CELL;type=VOICE;waid=447777777777:+44 7777 777777\n" +
+        "END:VCARD",
+      jpegThumbnail: fs.readFileSync("./media/logo.jpg"),
+    },
+  },
+};
 
 cmd({
   pattern: "menu",
-  desc: "Display full bot command list",
+  desc: "Display full command list",
   category: "system",
+  use: "",
   filename: __filename,
-}, async (Void, m, text, { prefix }) => {
-  const runtime = () => {
-    let sec = process.uptime();
-    let hrs = Math.floor(sec / 3600);
-    let mins = Math.floor((sec % 3600) / 60);
-    let secs = Math.floor(sec % 60);
-    return `${hrs}h ${mins}m ${secs}s`;
-  };
+}, async (msg) => {
+  const time = moment().tz("Africa/Nairobi").format("HH:mm:ss");
+  const date = moment().tz("Africa/Nairobi").format("dddd, MMMM Do YYYY");
 
-  const date = moment.tz("Africa/Nairobi").format("DD/MM/YYYY");
-  const time = moment.tz("Africa/Nairobi").format("HH:mm:ss");
-  const uptime = runtime();
+  const menuText = `
+*📅 Date:* ${date}
+⏰ *Time:* ${time}
+🤖 *Bot:* PK-XMD
+👤 *Owner:* @${msg.sender.split("@")[0]}
 
-  const botName = "PK-XMD";
-  const ownerName = "PKDRILLER";
-
-  const menutext = `
-╭───〘 *${botName} MENU* 〙───
-│ 🤖 *Bot Name:* ${botName}
-│ 👑 *Owner:* ${ownerName}
-│ 📅 *Date:* ${date}
-│ ⏰ *Time:* ${time}
-│ ⚡ *Uptime:* ${uptime}
-╰────────────────────
-
-🧠 *AI COMMANDS*
-★ . *ai*
-★ . *gpt*
-★ . *deepseek*
-★ . *openai*
-
-🎵 *DOWNLOADER*
+┏━━━❰  🎵 *DOWNLOADER*  ❱━━━┓
 ★ . *play*
 ★ . *yt*
 ★ . *mediafire*
@@ -45,122 +52,109 @@ cmd({
 ★ . *fb*
 ★ . *apk*
 
-🎧 *CONVERTERS*
-★ . *photo*
-★ . *mp3*
-★ . *mp4*
-★ . *voice*
-★ . *sticker*
-★ . *attp*
+┏━━━❰  🧠 *AI COMMANDS*  ❱━━━┓
+★ . *ai*
+★ . *gpt*
+★ . *deepseek*
+★ . *openai*
 
-🧩 *UTILITIES*
-★ . *ping*
-★ . *menu*
-★ . *calc*
-★ . *weather*
-★ . *qrcode*
+┏━━━❰  🎨 *LOGO MAKER*  ❱━━━┓
+★ . *neon*
+★ . *glitch*
+★ . *blackpink*
+★ . *marvel*
+★ . *joker*
 
-🧑‍💼 *OWNER COMMANDS*
-★ . *setpp*
-★ . *block*
-★ . *unblock*
-★ . *broadcast*
-★ . *restart*
+┏━━━❰  🎭 *FUN ZONE*  ❱━━━┓
+★ . *truth*
+★ . *dare*
+★ . *rate*
+★ . *ship*
+★ . *simpcard*
 
-👥 *GROUP TOOLS*
-★ . *tagall*
-★ . *hidetag*
-★ . *promote*
-★ . *demote*
-★ . *antilink*
-
-🌌 *ANIME ZONE*
+┏━━━❰  🖼️ *ANIME ZONE*  ❱━━━┓
 ★ . *anime*
 ★ . *waifu*
 ★ . *neko*
-★ . *cosplay*
-
-🤣 *FUN ZONE*
-★ . *truth*
-★ . *dare*
-★ . *fact*
+★ . *megumin*
 ★ . *quote*
-★ . *joke*
 
-💬 *AUTOMATION*
-★ . *autoreply*
-★ . *autovoice*
-★ . *autoreact*
-★ . *autostatus*
-
-🎭 *REACT & STYLE*
+┏━━━❰  💬 *REACT & STICKER*  ❱━━━┓
 ★ . *react*
+★ . *sticker*
 ★ . *emojimix*
-★ . *style*
+★ . *stickermeme*
+★ . *take*
 
-🛠️ *LOGO MAKER*
-★ . *logo*
-★ . *3dtext*
-★ . *marvel*
-★ . *neon*
+┏━━━❰  🧰 *UTILITIES*  ❱━━━┓
+★ . *calc*
+★ . *shortlink*
+★ . *readmore*
+★ . *translate*
+★ . *weather*
 
-🎙️ *VOICE FX*
-★ . *bass*
-★ . *robot*
-★ . *deep*
-★ . *slow*
+┏━━━❰  🛠️ *CONVERTERS*  ❱━━━┓
+★ . *toimg*
+★ . *tomp3*
+★ . *toaudio*
+★ . *toptt*
+★ . *tourl*
 
-📥 *STORAGE & TOOLS*
-★ . *addnote*
-★ . *getnote*
-★ . *delnote*
-★ . *listnote*
+┏━━━❰  👑 *OWNER CMDS*  ❱━━━┓
+★ . *eval*
+★ . *exec*
+★ . *broadcast*
+★ . *setpp*
+★ . *shutdown*
 
-📦 *SYSTEM*
+┏━━━❰  👥 *GROUP TOOLS*  ❱━━━┓
+★ . *tagall*
+★ . *promote*
+★ . *demote*
+★ . *hidetag*
+★ . *gpp*
+★ . *group open*
+★ . *group close*
+★ . *kick*
+★ . *add*
+★ . *gname*
+★ . *gdesc*
+
+┏━━━❰  🔐 *SYSTEM*  ❱━━━┓
+★ . *menu*
+★ . *ping*
 ★ . *alive*
-★ . *owner*
-★ . *script*
-★ . *support*
+★ . *uptime*
+★ . *status*
 
 `.trim();
 
-  const context = {
-    quotedMessage: {
-      contactMessage: {
-        displayName: "PKDRILLER",
-        vcard: `BEGIN:VCARD\nVERSION:3.0\nFN:PKDRILLER\nORG:PK-XMD;\nTEL;type=CELL;type=VOICE;waid=254700000000:+254 700 000000\nEND:VCARD`,
+  await msg.sendMessage(
+    msg.chat,
+    {
+      image: fs.readFileSync("https://files.catbox.moe/fgiecg.jpg"),
+      caption: menuText,
+      contextInfo: {
+        externalAdReply: {
+          title: "PK-XMD WHATSAPP BOT",
+          body: "MULTI DEVICE POWERED BY PKDRILLER",
+          thumbnail: fs.readFileSync("https://files.catbox.moe/fgiecg.jpg"),
+          mediaType: 1,
+          renderLargerThumbnail: true,
+          showAdAttribution: false,
+          sourceUrl: "https://github.com/mejja00254/PK-XMD",
+        },
+        forwardingScore: 9999,
+        isForwarded: true,
+        forwardedNewsletterMessageInfo: {
+          newsletterJid: config.fakeNewsletterJid || "120363288304618280@newsletter",
+          newsletterName: "PK-XMD Official",
+          serverMessageId: "",
+        },
       },
+      quoted: fakeVcard,
     },
-    isForwarded: true,
-    forwardingScore: 999,
-    forwardedNewsletterMessageInfo: {
-      newsletterJid: "120363288304618280@newsletter",
-      newsletterName: "PK-XMD Official Channel",
-      serverMessageId: 100,
-    },
-    externalAdReply: {
-      title: "PK-XMD WHATSAPP BOT",
-      body: `By PKDRILLER • ${date}`,
-      thumbnailUrl: "https://files.catbox.moe/fgiecg.jpg",
-      mediaType: 1,
-      renderLargerThumbnail: true,
-      showAdAttribution: true,
-      sourceUrl: "https://github.com/mejjar00254/PK-XMD"
-    }
-  };
-
-  // First send the menu text
-  await Void.sendMessage(m.chat, {
-    text: menutext,
-    contextInfo: context
-  }, { quoted: m });
-
-  // Then send the voice/audio separately
-  await Void.sendMessage(m.chat, {
-    audio: { url: "https://files.catbox.moe/ad4f0i.mp3" },
-    mimetype: 'audio/mpeg',
-    ptt: true,
-    contextInfo: context
-  }, { quoted: m });
+    { quoted: fakeVcard }
+  );
 });
-    
+                        
