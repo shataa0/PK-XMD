@@ -1,6 +1,21 @@
 const { cmd } = require('../command');
 const axios = require('axios');
 
+// Fake Verified Contact (vCard)
+const fakeContact = {
+  key: {
+    fromMe: false,
+    participant: "0@s.whatsapp.net",
+    ...(m.chat ? { remoteJid: "status@broadcast" } : {})
+  },
+  message: {
+    contactMessage: {
+      displayName: "Twitter Info Checker",
+      vcard: "BEGIN:VCARD\nVERSION:3.0\nFN:Elon Musk\nORG:Verified Account;\nTEL;type=CELL;type=VOICE;waid=1234567890:+1 234 567 890\nEND:VCARD"
+    }
+  }
+};
+
 cmd({
   pattern: "xstalk",
   alias: ["twitterstalk", "twtstalk"],
@@ -10,9 +25,7 @@ cmd({
   filename: __filename
 }, async (conn, m, store, { from, quoted, q, reply }) => {
   try {
-    if (!q) {
-      return reply("❌ Please provide a valid Twitter/X username.");
-    }
+    if (!q) return reply("❌ Please provide a valid Twitter/X username.");
 
     await conn.sendMessage(from, {
       react: { text: "⏳", key: m.key }
@@ -28,25 +41,45 @@ cmd({
     const user = data.data;
     const verifiedBadge = user.verified ? "✅" : "❌";
 
-    const caption = `╭━━━〔 *TWITTER/X STALKER* 〕━━━⊷\n`
-      + `┃👤 *Name:* ${user.name}\n`
-      + `┃🔹 *Username:* @${user.username}\n`
-      + `┃✔️ *Verified:* ${verifiedBadge}\n`
-      + `┃👥 *Followers:* ${user.followers_count}\n`
-      + `┃👤 *Following:* ${user.following_count}\n`
-      + `┃📝 *Tweets:* ${user.tweets_count}\n`
-      + `┃📅 *Joined:* ${user.created}\n`
-      + `┃🔗 *Profile:* [Click Here](${user.url})\n`
-      + `╰━━━⪼\n\n`
-      + `🔹 *Powered BY JawadTechX*`;
+    const caption =
+`╭━━━〔 *TWITTER/X STALKER* 〕━━━⊷
+┃👤 *Name:* ${user.name}
+┃🔹 *Username:* @${user.username}
+┃✔️ *Verified:* ${verifiedBadge}
+┃👥 *Followers:* ${user.followers_count}
+┃👤 *Following:* ${user.following_count}
+┃📝 *Tweets:* ${user.tweets_count}
+┃📅 *Joined:* ${user.created}
+┃🔗 *Profile:* ${user.url}
+╰━━━⪼
+
+🔹 *Powered by Pkdriller*`;
 
     await conn.sendMessage(from, {
       image: { url: user.avatar },
-      caption: caption
-    }, { quoted: m });
+      caption: caption,
+      contextInfo: {
+        externalAdReply: {
+          showAdAttribution: true,
+          title: "Twitter/X Profile Info",
+          body: "PK-XMD Twitter/X Tools",
+          mediaType: 1,
+          renderLargerThumbnail: false,
+          sourceUrl: user.url
+        },
+        forwardingScore: 999,
+        isForwarded: true,
+        forwardedNewsletterMessageInfo: {
+          newsletterJid: "120363288304618280@newsletter",
+          serverMessageId: "",
+          newsletterName: "PK-XMD Official"
+        }
+      }
+    }, { quoted: fakeContact });
 
   } catch (error) {
     console.error("Error:", error);
     reply("❌ An error occurred while processing your request. Please try again.");
   }
 });
+      
