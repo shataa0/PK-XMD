@@ -26,11 +26,22 @@ cmd({
   const jdate = moment.tz('Africa/Nairobi').format("DD/MM/YY");
   const uptime = runtime();
 
-  const fakeContact = {
-    displayName: "Pkdriller",
-    vcard: "BEGIN:VCARD\nVERSION:3.0\nFN:Pkdriller ✓\nORG:PK-XMD;\nTEL;type=CELL;type=VOICE;waid=254700000000:+254 700 000000\nEND:VCARD"
+  // 👤 Fake verified contact quoted
+  const quotedContact = {
+    key: {
+      fromMe: false,
+      remoteJid: "status@broadcast",
+      id: "PK-XMD-BLUE-TICK"
+    },
+    message: {
+      contactMessage: {
+        displayName: "Pkdriller ✓",
+        vcard: "BEGIN:VCARD\nVERSION:3.0\nFN:Pkdriller ✓\nORG:PK-XMD;\nTEL;type=CELL;type=VOICE;waid=254700000000:+254 700 000000\nEND:VCARD"
+      }
+    }
   };
 
+  // 📢 Newsletter style + Ad thumbnail
   const contextInfo = {
     externalAdReply: {
       title: "⚡ PK-XMD • Ping Command",
@@ -47,28 +58,24 @@ cmd({
       newsletterJid: "120363288304618280@newsletter",
       newsletterName: "PK-XMD Official",
       serverMessageId: "",
-    },
-    quotedMessage: {
-      contactMessage: fakeContact
-    },
-    participant: '0@s.whatsapp.net'
+    }
   };
 
   const end = performance.now();
   const speed = (end - start).toFixed(2);
 
-  // Send first ping message with fake quoted contact
+  // 🔹 Send ping info
   await Void.sendMessage(m.chat, {
     text: `*⚡Ping:* ${speed}ms\n*⏱️Uptime:* ${uptime}`,
     contextInfo
-  });
+  }, { quoted: quotedContact });
 
-  // Send animated hearts
+  // 💓 Animated emoji heartbeat
   const emojis = ['❤️', '🧡', '💛', '💚', '💙', '💜', '🖤', '🤍'];
   const sent = await Void.sendMessage(m.chat, {
     text: emojis[0],
     contextInfo
-  });
+  }, { quoted: quotedContact });
 
   for (let i = 1; i < emojis.length; i++) {
     await sleep(1000);
