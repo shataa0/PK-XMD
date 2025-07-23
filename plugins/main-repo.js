@@ -48,7 +48,7 @@ cmd({
       body: "Multi-device WhatsApp bot by Pkdriller",
       renderLargerThumbnail: true,
       mediaType: 1,
-      thumbnailUrl: "https://telegra.ph/file/91f8aa78a28d2f26b6020.jpg",
+      thumbnailUrl: "https://files.catbox.moe/4o9kvi.jpg",
       sourceUrl: "https://github.com/mejjar00254/Last-bot"
     }
   };
