@@ -1,6 +1,5 @@
 const { cmd } = require('../command');
 const moment = require('moment-timezone');
-const os = require('os');
 
 cmd({
   pattern: "menu",
@@ -125,35 +124,43 @@ cmd({
 
 `.trim();
 
+  const context = {
+    quotedMessage: {
+      contactMessage: {
+        displayName: "PKDRILLER",
+        vcard: `BEGIN:VCARD\nVERSION:3.0\nFN:PKDRILLER\nORG:PK-XMD;\nTEL;type=CELL;type=VOICE;waid=254700000000:+254 700 000000\nEND:VCARD`,
+      },
+    },
+    isForwarded: true,
+    forwardingScore: 999,
+    forwardedNewsletterMessageInfo: {
+      newsletterJid: "120363288304618280@newsletter",
+      newsletterName: "PK-XMD Official Channel",
+      serverMessageId: 100,
+    },
+    externalAdReply: {
+      title: "PK-XMD WHATSAPP BOT",
+      body: `By PKDRILLER • ${date}`,
+      thumbnailUrl: "https://files.catbox.moe/fgiecg.jpg",
+      mediaType: 1,
+      renderLargerThumbnail: true,
+      showAdAttribution: true,
+      sourceUrl: "https://github.com/mejjar00254/PK-XMD"
+    }
+  };
+
+  // First send the menu text
+  await Void.sendMessage(m.chat, {
+    text: menutext,
+    contextInfo: context
+  }, { quoted: m });
+
+  // Then send the voice/audio separately
   await Void.sendMessage(m.chat, {
     audio: { url: "https://files.catbox.moe/ad4f0i.mp3" },
     mimetype: 'audio/mpeg',
     ptt: true,
-    contextInfo: {
-      quotedMessage: {
-        contactMessage: {
-          displayName: "PKDRILLER",
-          vcard: `BEGIN:VCARD\nVERSION:3.0\nFN:PKDRILLER\nORG:PK-XMD;\nTEL;type=CELL;type=VOICE;waid=254700000000:+254 700 000000\nEND:VCARD`,
-        },
-      },
-      isForwarded: true,
-      forwardingScore: 999,
-      forwardedNewsletterMessageInfo: {
-        newsletterJid: "120363288304618280@newsletter",
-        newsletterName: "PK-XMD Official Channel",
-        serverMessageId: 100,
-      },
-      externalAdReply: {
-        title: "PK-XMD WHATSAPP BOT",
-        body: `By PKDRILLER • ${date}`,
-        thumbnailUrl: "https://files.catbox.moe/fgiecg.jpg",
-        mediaType: 1,
-        renderLargerThumbnail: true,
-        showAdAttribution: true,
-        sourceUrl: "https://github.com/mejjar00254/PK-XMD"
-      }
-    },
-    caption: menutext
+    contextInfo: context
   }, { quoted: m });
 });
     
