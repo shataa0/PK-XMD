@@ -1,67 +1,86 @@
+const config = require('../config');
 const { cmd } = require('../command');
 const axios = require('axios');
+const moment = require('moment-timezone');
+const { runtime } = require('../lib/functions');
 
 cmd({
   pattern: "repo",
-  alias: ["source", "sc"],
-  desc: "Show the bot GitHub repository",
-  category: "system",
-  filename: __filename,
-}, async (Void, m) => {
-  const githubUser = "mejjar00254";
-  const repoName = "Last-bot";
-  const apiUrl = `https://api.github.com/repos/${githubUser}/${repoName}`;
+  alias: ["source", "sc", "script"],
+  desc: "Display PK-XMD bot's GitHub repository info",
+  category: "info",
+  react: "📁",
+  filename: __filename
+}, 
+async (conn, m, msg, { from, reply }) => {
 
-  const fakeContact = {
-    key: {
-      fromMe: false,
-      participant: "0@s.whatsapp.net",
-      remoteJid: "status@broadcast"
-    },
-    message: {
-      contactMessage: {
-        displayName: "PKDRILLER | PK-XMD",
-        vcard: `BEGIN:VCARD\nVERSION:3.0\nFN:PKDRILLER | PK-XMD\nORG:PKDRILLER;\nTEL;type=CELL;type=VOICE;waid=254700000000:+254 700 000000\nEND:VCARD`,
-        jpegThumbnail: Buffer.alloc(0)
-      }
-    }
-  };
+  const GITHUB_REPO = 'https://github.com/mejjar00254/Last-bot';
 
   try {
-    const { data } = await axios.get(apiUrl);
-    const text = `*📁 PK-XMD GitHub Repository*\n\n` +
-                 `🔗 *Repo:* ${data.html_url}\n` +
-                 `⭐ *Stars:* ${data.stargazers_count}\n` +
-                 `🍴 *Forks:* ${data.forks_count}\n` +
-                 `👀 *Watchers:* ${data.watchers_count}\n` +
-                 `🆕 *Updated:* ${data.updated_at.split("T")[0]}\n\n` +
-                 `⚙️ *Deploy Bot on Panel:*\n` +
-                 `▸ Heroku: https://heroku.com/deploy\n` +
-                 `▸ Railway: https://railway.app/\n` +
-                 `▸ Render: https://render.com/\n\n` +
-                 `🔧 Powered by *Pkdriller*`;
+    const [, username, repo] = GITHUB_REPO.match(/github\.com\/([^/]+)\/([^/]+)/);
 
-    await Void.sendMessage(m.chat, {
-      text,
+    const res = await axios.get(`https://api.github.com/repos/${username}/${repo}`);
+    const data = res.data;
+
+    const caption = `
+╭───「 *PK-XMD GITHUB REPO* 」
+│
+├ 🔹 *Repository:* ${data.name}
+├ 🔸 *Author:* @${username}
+├ ⭐ *Stars:* ${data.stargazers_count}
+├ 🍴 *Forks:* ${data.forks_count}
+├ 🧾 *About:* ${data.description || 'An advanced multi-device WhatsApp bot'}
+│
+├ 📎 *GitHub:* 
+│   ${data.html_url}
+│
+├ 🚀 *Deploy Instantly:*
+│   Heroku | Railway | Render
+│   (Panel support ready)
+│
+╰───「 *⚡ Powered by Pkdriller* 」
+    `.trim();
+
+    await conn.sendMessage(from, {
+      image: { url: 'https://files.catbox.moe/fgiecg.jpg' }, // your bot banner
+      caption,
       contextInfo: {
         forwardingScore: 999,
         isForwarded: true,
+        mentionedJid: [m.sender],
         forwardedNewsletterMessageInfo: {
+          serverMessageId: 777,
           newsletterJid: "120363288304618280@newsletter",
-          newsletterName: "PK-XMD Official"
+          newsletterName: "PK-XMD Updates"
         },
         externalAdReply: {
-          title: "PK-XMD Source Code",
-          body: "Click to open GitHub Repository",
+          title: "PK-XMD • Source Code",
+          body: "By Pkdriller | GitHub Deployment",
           thumbnailUrl: "https://files.catbox.moe/fgiecg.jpg",
           mediaType: 1,
           renderLargerThumbnail: true,
-          showAdAttribution: true,
-          sourceUrl: data.html_url
+          showAdAttribution: false,
+          sourceUrl: GITHUB_REPO
         }
       }
-    }, { quoted: fakeContact });
+    }, { quoted: {
+      key: {
+        fromMe: false,
+        participant: `0@s.whatsapp.net`,
+        remoteJid: "status@broadcast"
+      },
+      message: {
+        contactMessage: {
+          displayName: "PKDRILLER",
+          vcard: `BEGIN:VCARD\nVERSION:3.0\nN:;PKDRILLER;;;\nFN:PKDRILLER\nitem1.TEL;waid=254700000000:+254 700 000000\nitem1.X-ABLabel:Developer\nEND:VCARD`
+        }
+      }
+    } });
+
   } catch (e) {
-    await m.reply("❌ Failed to fetch repository info.\nCheck the repo name or internet connection.");
+    console.error("Repo fetch error:", e);
+    return reply("❌ Could not retrieve repository details. Try again later.");
   }
+
 });
+        
