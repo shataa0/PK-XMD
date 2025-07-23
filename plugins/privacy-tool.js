@@ -297,7 +297,7 @@ async (conn, mek, m, { from, l, quoted, body, isCmd, command, args, q, isGroup, 
     }
 });
 cmd({
-    pattern: "getpp",
+    pattern: "getdp",
     desc: "Fetch the profile picture of a tagged or replied user.",
     category: "owner",
     filename: __filename
