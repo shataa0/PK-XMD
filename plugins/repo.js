@@ -1,85 +1,61 @@
-const config = require('../config');
 const { cmd } = require('../command');
-const axios = require('axios');
 const moment = require('moment-timezone');
-const { runtime } = require('../lib/functions');
+const config = require('../config');
 
 cmd({
   pattern: "repo",
-  alias: ["source", "sc", "script"],
-  desc: "Display PK-XMD bot's GitHub repository info",
-  category: "info",
-  react: "📁",
+  desc: "Displays the official GitHub repository of the bot.",
+  category: "system",
   filename: __filename
-}, 
-async (conn, m, msg, { from, reply }) => {
+}, async (Void, m, text, { prefix }) => {
 
-  const GITHUB_REPO = 'https://github.com/mejjar00254/Last-bot';
+  const botName = 'PK-XMD';
+  const repoUrl = 'https://github.com/pkdriller/PK-XMD'; // badilisha kama iko tofauti
+  const developer = 'Pkdriller';
 
-  try {
-    const [, username, repo] = GITHUB_REPO.match(/github\.com\/([^/]+)\/([^/]+)/);
-
-    const res = await axios.get(`https://api.github.com/repos/${username}/${repo}`);
-    const data = res.data;
-
-    const caption = `
-╭───「 *PK-XMD GITHUB REPO* 」
-│
-├ 🔹 *Repository:* ${data.name}
-├ 🔸 *Author:* @${username}
-├ ⭐ *Stars:* ${data.stargazers_count}
-├ 🍴 *Forks:* ${data.forks_count}
-├ 🧾 *About:* ${data.description || 'An advanced multi-device WhatsApp bot'}
-│
-├ 📎 *GitHub:* 
-│   ${data.html_url}
-│
-├ 🚀 *Deploy Instantly:*
-│   Heroku | Railway | Render
-│   (Panel support ready)
-│
-╰───「 *⚡ Powered by Pkdriller* 」
-    `.trim();
-
-    await conn.sendMessage(from, {
-      image: { url: 'https://files.catbox.moe/7zfdcq.jpg' }, // main banner only
-      caption,
-      contextInfo: {
-        forwardingScore: 999,
-        isForwarded: true,
-        mentionedJid: [m.sender],
-        forwardedNewsletterMessageInfo: {
-          serverMessageId: 777,
-          newsletterJid: "120363288304618280@newsletter",
-          newsletterName: "PK-XMD Updates"
-        },
-        externalAdReply: {
-          title: "PK-XMD • Source Code",
-          body: "By Pkdriller | GitHub Deployment",
-          mediaType: 1,
-          renderLargerThumbnail: true,
-          showAdAttribution: false,
-          sourceUrl: GITHUB_REPO
-        }
+  const fakeContact = {
+    key: {
+      fromMe: false,
+      participant: '0@s.whatsapp.net',
+      remoteJid: 'status@broadcast'
+    },
+    message: {
+      contactMessage: {
+        displayName: `${botName} | By ${developer}`,
+        vcard: `BEGIN:VCARD\nVERSION:3.0\nFN:${botName} | By ${developer}\nORG:${developer};\nTEL;type=CELL;type=VOICE;waid=254700000000:+254 700 000000\nEND:VCARD`,
+        jpegThumbnail: Buffer.alloc(0)
       }
-    }, { quoted: {
-      key: {
-        fromMe: false,
-        participant: `0@s.whatsapp.net`,
-        remoteJid: "status@broadcast"
+    }
+  };
+
+  const caption = `╭━━━〔 *${botName} - GitHub* 〕━━⬣
+┃ 👤 *Developer:* ${developer}
+┃ 🛠️ *Repository:* ${repoUrl}
+┃ ⚡ *Powered by:* Pkdriller
+┃ 💻 *Auto Deploy:* Heroku | Render | Railway
+╰━━━━━━━━━━━━━━━━━━⬣`;
+
+  await Void.sendMessage(m.chat, {
+    image: { url: 'https://files.catbox.moe/fgiecg.jpg' }, // badilisha kwa picha yako
+    caption: caption,
+    contextInfo: {
+      externalAdReply: {
+        title: `${botName} GitHub Repo`,
+        body: 'Deploy this bot now!',
+        mediaType: 1,
+        showAdAttribution: true,
+        sourceUrl: repoUrl,
+        renderLargerThumbnail: true
       },
-      message: {
-        contactMessage: {
-          displayName: "PKDRILLER",
-          vcard: `BEGIN:VCARD\nVERSION:3.0\nN:;PKDRILLER;;;\nFN:PKDRILLER\nitem1.TEL;waid=254700000000:+254 700 000000\nitem1.X-ABLabel:Developer\nEND:VCARD`
-        }
-      }
-    } });
-
-  } catch (e) {
-    console.error("Repo fetch error:", e);
-    return reply("❌ Could not retrieve repository details. Try again later.");
-  }
-
+      forwardingScore: 999,
+      isForwarded: true,
+      forwardedNewsletterMessageInfo: {
+        newsletterJid: "120363288304618280@newsletter",
+        newsletterName: "PK-XMD Official",
+        serverMessageId: 1
+      },
+      mentionedJid: [m.sender]
+    }
+  }, { quoted: fakeContact });
 });
       
