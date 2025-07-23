@@ -113,21 +113,21 @@ const port = process.env.PORT || 9090;
   console.log('Plugins installed successful ✅')
   console.log('Bot connected to whatsapp ✅')
   
-  let up = `╭─〔 *🤖 KHAN-MD BOT* 〕  
+  let up = `╭─〔 *🤍💪 PK-XMD BOT📳📳* 〕  
 ├─▸ *Ultra Super Fast Powerfull ⚠️*  
-│     *World Best BOT KHAN-MD* 
-╰─➤ *Your Smart WhatsApp Bot is Ready To use 🍁!*  
+│     *next generation version bot* 
+╰─➤ *Your Smart WhatsApp Bot by pkdriller*  
 
-- *🖤 Thank You for Choosing KHAN-MD!* 
+- *🔮 always choose PK-XMD🔮💯!* 
 
 ╭──〔 🔗 *Information* 〕  
 ├─ 🧩 *Prefix:* = ${prefix}
 ├─ 📢 *Join Channel:*  
 │    https://whatsapp.com/channel/0029VatOy2EAzNc2WcShQw1j  
-├─ 🌟 *Star the Repo:*  
-│    https://github.com/JawadYT36/KHAN-MD  
-╰─🚀 *Powered by JawadTechX*`;
-    conn.sendMessage(conn.user.id, { image: { url: `https://files.catbox.moe/7zfdcq.jpg` }, caption: up })
+├─ 🌟 *MESSAGE DEVELOPER/OWNER+254794146821*
+│     
+╰─🚀 *Powered by mr pkdriller*`;
+    conn.sendMessage(conn.user.id, { image: { url: `` }, caption: up })
   }
   })
   conn.ev.on('creds.update', saveCreds)
