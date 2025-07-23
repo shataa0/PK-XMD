@@ -3,11 +3,11 @@ const moment = require('moment-timezone');
 const { performance } = require('perf_hooks');
 
 function runtime() {
-  let seconds = process.uptime();
-  let hours = Math.floor(seconds / 3600);
-  let minutes = Math.floor((seconds % 3600) / 60);
-  let secs = Math.floor(seconds % 60);
-  return `${hours}h ${minutes}m ${secs}s`;
+  let sec = process.uptime();
+  let hrs = Math.floor(sec / 3600);
+  let mins = Math.floor((sec % 3600) / 60);
+  let secs = Math.floor(sec % 60);
+  return `${hrs}h ${mins}m ${secs}s`;
 }
 
 function sleep(ms) {
@@ -21,27 +21,29 @@ cmd({
   category: "system",
   filename: __filename
 }, async (Void, m, text) => {
+
   const start = performance.now();
   const jtime = moment.tz('Africa/Nairobi').format("HH:mm:ss");
   const jdate = moment.tz('Africa/Nairobi').format("DD/MM/YY");
   const uptime = runtime();
 
-  // 👤 Fake verified contact quoted
-  const quotedContact = {
+  // ✅ Fake verified vCard quoted message
+  const fakeContact = {
     key: {
       fromMe: false,
-      remoteJid: "status@broadcast",
-      id: "PK-XMD-BLUE-TICK"
+      participant: "0@s.whatsapp.net",
+      remoteJid: "status@broadcast"
     },
     message: {
       contactMessage: {
-        displayName: "Pkdriller ✓",
-        vcard: "BEGIN:VCARD\nVERSION:3.0\nFN:Pkdriller ✓\nORG:PK-XMD;\nTEL;type=CELL;type=VOICE;waid=254700000000:+254 700 000000\nEND:VCARD"
+        displayName: "PKDRILLER | PK-XMD",
+        vcard: `BEGIN:VCARD\nVERSION:3.0\nFN:PKDRILLER | PK-XMD\nORG:PKDRILLER;\nTEL;type=CELL;type=VOICE;waid=254700000000:+254 700 000000\nEND:VCARD`,
+        jpegThumbnail: Buffer.alloc(0)
       }
     }
   };
 
-  // 📢 Newsletter style + Ad thumbnail
+  // 📢 Forwarded Newsletter + Thumbnail
   const contextInfo = {
     externalAdReply: {
       title: "⚡ PK-XMD • Ping Command",
@@ -56,26 +58,25 @@ cmd({
     isForwarded: true,
     forwardedNewsletterMessageInfo: {
       newsletterJid: "120363288304618280@newsletter",
-      newsletterName: "PK-XMD Official",
-      serverMessageId: "",
+      newsletterName: "PK-XMD Official"
     }
   };
 
   const end = performance.now();
   const speed = (end - start).toFixed(2);
 
-  // 🔹 Send ping info
+  // ⚡ Send Ping message
   await Void.sendMessage(m.chat, {
     text: `*⚡Ping:* ${speed}ms\n*⏱️Uptime:* ${uptime}`,
     contextInfo
-  }, { quoted: quotedContact });
+  }, { quoted: fakeContact });
 
-  // 💓 Animated emoji heartbeat
+  // 💓 Animated Emoji Heartbeat
   const emojis = ['❤️', '🧡', '💛', '💚', '💙', '💜', '🖤', '🤍'];
   const sent = await Void.sendMessage(m.chat, {
     text: emojis[0],
     contextInfo
-  }, { quoted: quotedContact });
+  }, { quoted: fakeContact });
 
   for (let i = 1; i < emojis.length; i++) {
     await sleep(1000);
@@ -86,3 +87,4 @@ cmd({
     });
   }
 });
+    
