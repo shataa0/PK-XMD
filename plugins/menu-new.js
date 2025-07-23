@@ -127,7 +127,7 @@ cmd({
   const context = {
     quotedMessage: {
       contactMessage: {
-        displayName: "PKDRILLER",
+        displayName: "PKDRILLER ✅", // Blue tick look
         vcard: `BEGIN:VCARD\nVERSION:3.0\nFN:PKDRILLER\nORG:PK-XMD;\nTEL;type=CELL;type=VOICE;waid=254700000000:+254 700 000000\nEND:VCARD`,
       },
     },
@@ -144,16 +144,16 @@ cmd({
       thumbnailUrl: "", // Your image link here
       mediaType: 1,
       renderLargerThumbnail: false,
-      showAdAttribution: true,
-      sourceUrl: "https://github.com/pkdriller/PK-XMD"
+      showAdAttribution: false,
+      sourceUrl: "https://github.com/mejjar00254/PK-XMD"
     }
   };
 
   // Send menu image with caption
   await Void.sendMessage(m.chat, {
-    image: { url: "https://files.catbox.moe/fgiecg.jpg" }, // Use your uploaded PK-XMD menu image
+    image: { url: "https://files.catbox.moe/fgiecg.jpg" },
     caption: menutext,
     contextInfo: context,
   }, { quoted: m });
 });
-        
+      
