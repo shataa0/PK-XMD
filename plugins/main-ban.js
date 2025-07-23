@@ -66,7 +66,7 @@ cmd({
         fs.writeFileSync("./assets/ban.json", JSON.stringify(updated, null, 2));
 
         await conn.sendMessage(from, {
-            image: { url: "https://files.catbox.moe/7zfdcq.jpg" },
+            image: { url: "https://files.catbox.moe/4o9kvi.jpg" },
             caption: `✅ User has been unbanned.`
         }, { quoted: mek });
 
@@ -98,7 +98,7 @@ cmd({
         });
 
         await conn.sendMessage(from, {
-            image: { url: "https://files.catbox.moe/7zfdcq.jpg" },
+            image: { url: "https://files.catbox.moe/4o9kvi.jpg" },
             caption: msg
         }, { quoted: mek });
     } catch (err) {
