@@ -8,7 +8,7 @@ cmd({
   category: "menu",
   react: "📑",
   filename: __filename
-}, async (conn, m, msg, { reply }) => {
+}, async (conn, m, text, { reply }) => {
   try {
     const totalCommands = Object.keys(commands).length;
     let aliasCount = 0;
@@ -28,6 +28,7 @@ cmd({
 │ • Total Commands: ${totalCommands}
 │ • Total Aliases: ${aliasCount}
 │ • Total Categories: ${categories.length}
+│
 ╰────────────────⳹\n`;
 
     const categorized = {};
@@ -39,7 +40,7 @@ cmd({
       menuText += `\n📁 *${category.toUpperCase()}* [${cmds.length} commands]\n`;
       cmds.forEach(c => {
         menuText += `\n• 🧾 .${c.pattern}`;
-        if (c.alias?.length) menuText += `\n   ↳ Aliases: ${c.alias.map(a => `.${a}`).join(', ')}`;
+        if (c.alias && c.alias.length > 0) menuText += `\n   ↳ Aliases: ${c.alias.map(a => `.${a}`).join(', ')}`;
         if (c.desc) menuText += `\n   ↳ Desc: ${c.desc}`;
         if (c.use) menuText += `\n   ↳ Usage: ${c.use}`;
       });
@@ -48,7 +49,7 @@ cmd({
     menuText += `\n\n> _Powered by Pkdriller_`;
 
     await conn.sendMessage(
-      msg.from,
+      m.chat,
       {
         text: menuText,
         quoted: {
@@ -86,4 +87,4 @@ cmd({
     await reply("❌ Error: " + (err.message || err));
   }
 });
-        
+            
