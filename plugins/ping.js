@@ -27,18 +27,8 @@ cmd({
   const uptime = runtime();
 
   const fakeContact = {
-    key: {
-      participants: "0@s.whatsapp.net",
-      remoteJid: "status@broadcast",
-      fromMe: false,
-      id: "NEXUS-XMD"
-    },
-    message: {
-      contactMessage: {
-        displayName: "Pkdriller",
-        vcard: "BEGIN:VCARD\nVERSION:3.0\nFN:Pkdriller ✓\nORG:PK-XMD;\nTEL;type=CELL;type=VOICE;waid=254700000000:+254 700 000000\nEND:VCARD"
-      }
-    }
+    displayName: "Pkdriller",
+    vcard: "BEGIN:VCARD\nVERSION:3.0\nFN:Pkdriller ✓\nORG:PK-XMD;\nTEL;type=CELL;type=VOICE;waid=254700000000:+254 700 000000\nEND:VCARD"
   };
 
   const contextInfo = {
@@ -57,29 +47,35 @@ cmd({
       newsletterJid: "120363288304618280@newsletter",
       newsletterName: "PK-XMD Official",
       serverMessageId: "",
-    }
+    },
+    quotedMessage: {
+      contactMessage: fakeContact
+    },
+    participant: '0@s.whatsapp.net'
   };
 
   const end = performance.now();
   const speed = (end - start).toFixed(2);
 
-  // Send first ping message
+  // Send first ping message with fake quoted contact
   await Void.sendMessage(m.chat, {
     text: `*⚡Ping:* ${speed}ms\n*⏱️Uptime:* ${uptime}`,
-    contextInfo,
-  }, { quoted: fakeContact });
+    contextInfo
+  });
 
   // Send animated hearts
   const emojis = ['❤️', '🧡', '💛', '💚', '💙', '💜', '🖤', '🤍'];
-  const sent = await Void.sendMessage(m.chat, { text: emojis[0], contextInfo }, { quoted: fakeContact });
+  const sent = await Void.sendMessage(m.chat, {
+    text: emojis[0],
+    contextInfo
+  });
 
   for (let i = 1; i < emojis.length; i++) {
     await sleep(1000);
     await Void.sendMessage(m.chat, {
       text: emojis[i],
       edit: sent.key,
-      contextInfo,
+      contextInfo
     });
   }
 });
-    
