@@ -121,14 +121,14 @@ cmd({
 ★ . *owner*
 ★ . *script*
 ★ . *support*
+
 `.trim();
 
   const context = {
     quotedMessage: {
       contactMessage: {
-        displayName: "PKDRILLER ✅",
-        vcard: `BEGIN:VCARD\nVERSION:3.0\nFN:PKDRILLER ✅\nORG:PK-XMD;\nTEL;type=CELL;type=VOICE;waid=254700000000:+254 700 000000\nEND:VCARD`,
-        jpegThumbnail: await (await fetch("https://i.imgur.com/sbSkbZS.jpg")).buffer(),
+        displayName: "PKDRILLER",
+        vcard: `BEGIN:VCARD\nVERSION:3.0\nFN:PKDRILLER\nORG:PK-XMD;\nTEL;type=CELL;type=VOICE;waid=254700000000:+254 700 000000\nEND:VCARD`,
       },
     },
     isForwarded: true,
@@ -141,20 +141,19 @@ cmd({
     externalAdReply: {
       title: "PK-XMD WhatsApp Bot",
       body: `By PKDRILLER • ${date}`,
-      thumbnailUrl: "https://files.catbox.moe/fgiecg.jpg",
+      thumbnailUrl: "", // Your image link here
       mediaType: 1,
-      renderLargerThumbnail: true,
+      renderLargerThumbnail: false,
       showAdAttribution: true,
       sourceUrl: "https://github.com/pkdriller/PK-XMD"
     }
   };
 
+  // Send menu image with caption
   await Void.sendMessage(m.chat, {
-    image: {
-      url: "https://i.imgur.com/sbSkbZS.jpg" // your menu image
-    },
+    image: { url: "https://files.catbox.moe/fgiecg.jpg" }, // Use your uploaded PK-XMD menu image
     caption: menutext,
-    contextInfo: context
+    contextInfo: context,
   }, { quoted: m });
 });
-      
+        
