@@ -127,7 +127,7 @@ const port = process.env.PORT || 9090;
 ├─ 🌟 *MESSAGE DEVELOPER/OWNER+254794146821*
 │     
 ╰─🚀 *Powered by mr pkdriller*`;
-    conn.sendMessage(conn.user.id, { image: { url: `` }, caption: up })
+    conn.sendMessage(conn.user.id, { image: { url: `https://res.cloudinary.com/dtjjgiitl/image/upload/q_auto:good,f_auto,fl_progressive/v1753271440/h4zzcb49vfmaqv5quq4m.jpg` }, caption: up })
   }
   })
   conn.ev.on('creds.update', saveCreds)
