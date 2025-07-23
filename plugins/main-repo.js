@@ -1,69 +1,73 @@
-const config = require('../config')
-const {cmd , commands} = require('../command')
-const os = require("os")
-const {runtime} = require('../lib/functions')
-const axios = require('axios')
-const {sleep} = require('../lib/functions')
+const { cmd } = require('../command');
+const axios = require('axios');
 
 cmd({
-    pattern: "repo",
-    alias: ["sc", "script", "repository"],
-    desc: "Fetch information about a GitHub repository.",
-    react: "📂",
-    category: "info",
-    filename: __filename,
-},
-async (conn, mek, m, { from, reply }) => {
-    const githubRepoURL = 'https://github.com/JawadYT36/KHAN-MD';
+  pattern: "repo",
+  desc: "Show official bot repository with stars, forks, deploy options",
+  category: "system",
+  react: "📦",
+  filename: __filename
+}, async (Void, m, text) => {
 
-    try {
-        // Extract username and repo name from the URL
-        const [, username, repoName] = githubRepoURL.match(/github\.com\/([^/]+)\/([^/]+)/);
+  const GITHUB_REPO = "mejjar00254/Last-bot";
+  const GITHUB_API = `https://api.github.com/repos/${GITHUB_REPO}`;
 
-        // Fetch repository details using GitHub API with axios
-        const response = await axios.get(`https://api.github.com/repos/${username}/${repoName}`);
-        
-        const repoData = response.data;
+  let repoInfo;
+  try {
+    const { data } = await axios.get(GITHUB_API);
+    repoInfo = `⭐ Stars: *${data.stargazers_count}* | 🍴 Forks: *${data.forks_count}*`;
+  } catch (err) {
+    repoInfo = `⭐ Stars: *N/A* | 🍴 Forks: *N/A*`;
+  }
 
-        // Format the repository information in new stylish format
-        const formattedInfo = `
-╭─〔 *KHAN-MD REPOSITORY* 〕
-│
-├─ *📌 Repository Name:* ${repoData.name}
-├─ *👑 Owner:* JawadYT36
-├─ *⭐ Stars:* ${repoData.stargazers_count}
-├─ *⑂ Forks:* ${repoData.forks_count}
-├─ *📝 Description:* ${repoData.description || 'World Best WhatsApp Bot powered by JawadTechX'}
-│
-├─ *🔗 GitHub Link:*
-│   ${repoData.html_url}
-│
-├─ *🌐 Join Channel:*
-│   https://whatsapp.com/channel/0029VatOy2EAzNc2WcShQw1j
-│
-╰─ *⚡ Powered by KHAN-MD*
-`.trim();
-
-        // Send an image with the formatted info as a caption
-        await conn.sendMessage(from, {
-            image: { url: `https://files.catbox.moe/7zfdcq.jpg` }, // Replace with your image URL
-            caption: formattedInfo,
-            contextInfo: { 
-                mentionedJid: [m.sender],
-                forwardingScore: 999,
-                isForwarded: true,
-                forwardedNewsletterMessageInfo: {
-                    newsletterJid: '120363354023106228@newsletter',
-                    newsletterName: 'KHAN-MD',
-                    serverMessageId: 143
-                }
-            }
-        }, { quoted: mek });
-
-    } catch (error) {
-        console.error("Error in repo command:", error);
-        reply("❌ Sorry, something went wrong while fetching the repository information. Please try again later.");
+  const fakeContact = {
+    key: {
+      fromMe: false,
+      participant: "0@s.whatsapp.net",
+      remoteJid: "status@broadcast"
+    },
+    message: {
+      contactMessage: {
+        displayName: "PKDRILLER",
+        vcard: `BEGIN:VCARD\nVERSION:3.0\nFN:PKDRILLER✅\nORG:Official;\nTEL;type=CELL;type=VOICE;waid=254700000000:+254 700 000000\nEND:VCARD`
+      }
     }
+  };
+
+  const contextInfo = {
+    forwardingScore: 999,
+    isForwarded: true,
+    forwardedNewsletterMessageInfo: {
+      newsletterJid: "120363020792316963@newsletter",
+      serverMessageId: "",
+      newsletterName: "PK-XMD Updates"
+    },
+    externalAdReply: {
+      showAdAttribution: true,
+      title: "📦 PK-XMD GitHub Repository",
+      body: "Multi-device WhatsApp bot by Pkdriller",
+      renderLargerThumbnail: true,
+      mediaType: 1,
+      thumbnailUrl: "https://telegra.ph/file/91f8aa78a28d2f26b6020.jpg",
+      sourceUrl: "https://github.com/mejjar00254/Last-bot"
+    }
+  };
+
+  const caption = `
+╭───⌈ *PK-XMD BOT REPO* ⌋───⬣
+│ 🔗 *GitHub:* 
+│ https://github.com/mejjar00254/Last-bot
+│
+│ ${repoInfo}
+│
+│ 🚀 *Deploy This Bot:*
+│ ▸ Railway: https://railway.app
+│ ▸ Render: https://render.com
+│ ▸ Heroku: https://heroku.com
+│
+│ 👤 Author: *Pkdriller*
+╰────────────────────⬣
+`;
+
+  await Void.sendMessage(m.from, { text: caption.trim(), contextInfo }, { quoted: fakeContact });
 });
-
-
