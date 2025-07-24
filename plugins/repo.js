@@ -10,7 +10,7 @@ cmd({
 }, async (Void, m, text, { prefix }) => {
 
   const botName = 'PK-XMD';
-  const repoUrl = 'https://github.com/pkdriller/PK-XMD'; // badilisha kama iko tofauti
+  const repoUrl = 'https://github.com/pkdriller/PK-XMD'; // Badilisha kama repo ni tofauti
   const developer = 'Pkdriller';
 
   const fakeContact = {
@@ -36,7 +36,7 @@ cmd({
 ╰━━━━━━━━━━━━━━━━━━⬣`;
 
   await Void.sendMessage(m.chat, {
-    image: { url: 'https://files.catbox.moe/fgiecg.jpg' }, // badilisha kwa picha yako
+    image: { url: 'https://telegra.ph/file/e5233003e2e4b4fc1f418.jpg' }, // Badilisha hii image kama unataka
     caption: caption,
     contextInfo: {
       externalAdReply: {
@@ -45,12 +45,12 @@ cmd({
         mediaType: 1,
         showAdAttribution: true,
         sourceUrl: repoUrl,
-        
+        renderLargerThumbnail: true
       },
       forwardingScore: 999,
       isForwarded: true,
       forwardedNewsletterMessageInfo: {
-        newsletterJid: "120363288304618280@newsletter",
+        newsletterJid: "120363025736131906@newsletter",
         newsletterName: "PK-XMD Official",
         serverMessageId: 1
       },
@@ -58,4 +58,4 @@ cmd({
     }
   }, { quoted: fakeContact });
 });
-      
+        
