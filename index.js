@@ -131,30 +131,6 @@ const port = process.env.PORT || 9090;
   }
   })
   conn.ev.on('creds.update', saveCreds)
-	  // === ANTI-CALL FEATURE ===
-conn.ev.on('call', async (call) => {
-    const from = call.from;
-    const id = call.id;
-    const callType = call.status;
-    
-    console.log(`📞 Call event detected: ${callType} from ${from}`);
-
-    if (callType === 'offer') {
-        // Send warning message
-        await conn.sendMessage(from, {
-            text: `⚠️ Auto-Block: Calling the bot is not allowed!\nPlease contact the owner if this was a mistake.`
-        });
-
-        // Optional: Send vCard of bot owner
-        await conn.sendContact(from, [config.OWNER_NUMBER.replace(/[^0-9]/g, '')]);
-
-        // Wait 5 seconds then block the user
-        await sleep(5000);
-        await conn.updateBlockStatus(from, "block");
-        console.log(`🚫 Blocked user who tried to call: ${from}`);
-    }
-});
-	  
 
   //==============================
 
