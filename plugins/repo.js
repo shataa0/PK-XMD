@@ -1,60 +1,82 @@
+const axios = require('axios');
 const { cmd } = require('../command');
-const moment = require('moment-timezone');
-const config = require('../config');
 
 cmd({
   pattern: "repo",
-  desc: "Displays the official GitHub repository of the bot.",
+  desc: "Show the official bot repository",
   category: "system",
+  react: "📁",
   filename: __filename
-}, async (Void, m, text, { prefix }) => {
+}, 
+async (conn, m, { from, prefix }) => {
+  try {
+    const repo = "mejjar00254/PK-XMD"; // Replace with your actual GitHub repo
+    const apiUrl = `https://api.github.com/repos/${repo}`;
+    const { data } = await axios.get(apiUrl);
 
-  const botName = 'PK-XMD';
-  const repoUrl = 'https://github.com/mejjar00254/PK-XMD'; // badilisha kama iko tofauti
-  const developer = 'Pkdriller';
+    const txt = `
+*📦 PK-XMD - Official GitHub Repository*
 
-  const fakeContact = {
-    key: {
-      fromMe: false,
-      participant: '0@s.whatsapp.net',
-      remoteJid: 'status@broadcast'
-    },
-    message: {
-      contactMessage: {
-        displayName: `${botName} | By ${developer}`,
-        vcard: `BEGIN:VCARD\nVERSION:3.0\nFN:${botName} | By ${developer}\nORG:${developer};\nTEL;type=CELL;type=VOICE;waid=254700000000:+254 700 000000\nEND:VCARD`
+📌 *Name:* ${data.name}
+🧑‍💻 *Owner:* ${data.owner.login}
+🌐 *URL:* ${data.html_url}
+📄 *Description:* ${data.description || "No description provided"}
+⭐ *Stars:* ${data.stargazers_count}
+🍴 *Forks:* ${data.forks_count}
+🔧 *Issues:* ${data.open_issues}
+📅 *Created:* ${new Date(data.created_at).toDateString()}
+
+────────────────────
+🚀 *How to Deploy PK-XMD Bot*
+
+You can deploy this WhatsApp MD bot on:
+
+🔹 [Render](https://render.com)
+🔹 [Railway](https://railway.app)
+🔹 [Heroku](https://heroku.com)
+
+Clone the repo and follow setup instructions in the README. Node.js & Baileys is required.
+
+🔗 GitHub: ${data.html_url}
+📖 Docs: Check the README file in the repo
+
+> ⚡ *Powered by Pkdriller* ⚡
+`;
+
+    const vcard = {
+      displayName: "PK-XMD",
+      vcard: `BEGIN:VCARD\nVERSION:3.0\nFN:PK-XMD Bot\nORG:PK-XMD Official;\nTEL;type=CELL;type=VOICE;waid=254700000000:+254 700 000000\nX-USER-TYPE:BOT\nEND:VCARD`
+    };
+
+    await conn.sendMessage(from, {
+      text: txt.trim(),
+      contextInfo: {
+        mentionedJid: [m.sender],
+        externalAdReply: {
+          title: "PK-XMD GitHub Repository",
+          body: "Deploy to Railway | Heroku | Render",
+          thumbnailUrl: "https://files.catbox.moe/fgiecg.jpg", // optional image URL
+          sourceUrl: data.html_url,
+          mediaType: 1,
+          renderLargerThumbnail: true,
+          showAdAttribution: true
+        },
+        forwardedNewsletterMessageInfo: {
+          newsletterName: "PK-XMD Bot",
+          newsletterJid: "120363288304618280@newsletter"
+        },
+        quotedMessage: {
+          contactMessage: {
+            displayName: "PK-XMD Bot",
+            vcard: vcard.vcard
+          }
+        }
       }
-    }
-  };
+    }, { quoted: m });
 
-  const caption = `╭━━━〔 *${botName} - GitHub* 〕━━⬣
-┃ 👤 *Developer:* ${developer}
-┃ 🛠️ *Repository:* ${repoUrl}
-┃ ⚡ *Powered by:* Pkdriller
-┃ 💻 *Auto Deploy:* Heroku | Render | Railway
-╰━━━━━━━━━━━━━━━━━━⬣`;
-
-  await Void.sendMessage(m.chat, {
-    image: { url: 'https://files.catbox.moe/fgiecg.jpg' }, // badilisha kwa picha yako
-    caption: caption,
-    contextInfo: {
-      externalAdReply: {
-        title: `${botName} GitHub Repo`,
-        body: 'Deploy this bot now!',
-        mediaType: 1,
-        showAdAttribution: true,
-        sourceUrl: repoUrl,
-        renderLargerThumbnail: false
-      },
-      forwardingScore: 999,
-      isForwarded: true,
-      forwardedNewsletterMessageInfo: {
-        newsletterJid: "120363288304618280@newsletter",
-        newsletterName: "PK-XMD Official",
-        serverMessageId: 1
-      },
-      mentionedJid: [m.sender]
-    }
-  }, { quoted: fakeContact });
+  } catch (err) {
+    console.error("Error fetching repo:", err);
+    return m.reply("❌ Failed to fetch repository info. Please check the repo name or try again later.");
+  }
 });
-      
+          
