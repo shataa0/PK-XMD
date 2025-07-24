@@ -44,7 +44,7 @@ cmd({
         mediaType: 1,
         showAdAttribution: true,
         sourceUrl: repoUrl,
-        renderLargerThumbnail: true
+        renderLargerThumbnail: false
       },
       forwardingScore: 999,
       isForwarded: true,
