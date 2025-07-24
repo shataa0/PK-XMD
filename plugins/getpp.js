@@ -16,26 +16,37 @@ async (conn, mek, m, { from, sender, reply, isGroup }) => {
     let targetJid;
 
     if (isGroup) {
-      // In group: must reply to get a target
       if (quotedMsg && quotedKey) {
         targetJid = quotedMsg;
       } else {
         return reply("❌ Please reply to someone's message to get their profile picture.");
       }
     } else {
-      // In DM: use the other user you're chatting with
       targetJid = from.endsWith("@s.whatsapp.net") ? from : sender;
     }
 
-    // Attempt to get profile picture
     let imageUrl;
     try {
       imageUrl = await conn.profilePictureUrl(targetJid, 'image');
     } catch {
-      imageUrl = "https://files.catbox.moe/ntqtnt.jpg"; // fallback image
+      imageUrl = "https://files.catbox.moe/ntqtnt.jpg";
     }
 
-    // Send profile picture
+    const fakeVCard = {
+      key: {
+        fromMe: false,
+        participant: '0@s.whatsapp.net',
+        remoteJid: "status@broadcast"
+      },
+      message: {
+        contactMessage: {
+          displayName: "PKDRILLER ✅",
+          vcard: "BEGIN:VCARD\nVERSION:3.0\nFN:PKDRILLER ✅\nORG:PK-XMD;\nTEL;type=CELL;type=VOICE;waid=254700000000:+254 700 000000\nEND:VCARD",
+          jpegThumbnail: Buffer.from([])
+        }
+      }
+    };
+
     await conn.sendMessage(from, {
       image: { url: imageUrl },
       caption: `🖼️ Profile Picture of @${targetJid.split('@')[0]}`,
@@ -48,10 +59,11 @@ async (conn, mek, m, { from, sender, reply, isGroup }) => {
           newsletterJid: "120363288304618280@newsletter"
         }
       }
-    }, { quoted: mek });
+    }, { quoted: fakeVCard });
 
   } catch (err) {
     console.error("Error in getpp:", err);
     reply("❌ Failed to fetch profile picture.");
   }
 });
+      
