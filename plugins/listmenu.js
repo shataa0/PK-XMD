@@ -1,96 +1,81 @@
 const fs = require('fs');
 const path = require('path');
 const { cmd } = require('../command');
-const config = require('../config');
+const moment = require('moment-timezone');
 
 cmd({
   pattern: "listmenu",
-  desc: "List all available commands in the bot",
+  alias: ["commandlist", "cmdlist"],
+  desc: "Fetch and display all available bot commands",
   category: "system",
-  filename: __filename
-}, async (Void, m) => {
-  const botName = "PK-XMD";
-  const developer = "Pkdriller";
+  filename: __filename,
+}, async (Void, m, text, { prefix }) => {
+  try {
+    const commandDir = path.join(__dirname, '../plugins');
+    const commandFiles = fs.readdirSync(commandDir).filter(file => file.endsWith('.js'));
 
-  const commandsPath = path.join(__dirname); // folder ya commands
-  const commandFiles = fs.readdirSync(commandsPath).filter(file => file.endsWith('.js'));
+    let totalCommands = 0;
+    let commandList = [];
 
-  let allCommands = [];
-  let categorized = {};
+    for (const file of commandFiles) {
+      const filePath = path.join(commandDir, file);
+      const content = fs.readFileSync(filePath, 'utf-8');
+      const matches = content.match(/pattern:\s*["'`](.*?)["'`]/g);
+      
+      if (matches) {
+        const extracted = matches.map(x => x.split(':')[1].replace(/["'`,]/g, '').trim());
+        totalCommands += extracted.length;
+        commandList.push(`📁 *${file}*\n${extracted.map(cmd => `╰➤ \`${prefix}${cmd}\``).join('\n')}`);
+      }
+    }
 
-  for (const file of commandFiles) {
-    const filePath = path.join(commandsPath, file);
-    try {
-      const fileContent = require(filePath);
-      if (Array.isArray(fileContent)) {
-        for (const cmd of fileContent) {
-          const cmdName = cmd.pattern || "unknown";
-          const category = (cmd.category || "Uncategorized").toLowerCase();
-          if (!categorized[category]) categorized[category] = [];
-          categorized[category].push(cmdName);
-          allCommands.push(cmdName);
+    const time = moment().tz('Africa/Nairobi').format('HH:mm:ss');
+    const date = moment().tz('Africa/Nairobi').format('dddd, MMMM Do YYYY');
+
+    const caption = `╭━━〔 *PK-XMD Command List* 〕━━⬣
+┃ 👑 *Total Commands:* ${totalCommands}
+┃ 📅 *Date:* ${date}
+┃ ⏰ *Time:* ${time}
+┃ 🤖 *Prefix:* ${prefix}
+╰━━━━━━━━━━━━━━━━━━━━⬣\n\n${commandList.join('\n\n')}`;
+
+    await Void.sendMessage(m.chat, {
+      image: { url: "https://files.catbox.moe/fgiecg.jpg" },
+      caption,
+      contextInfo: {
+        forwardingScore: 999,
+        isForwarded: true,
+        mentionedJid: [m.sender],
+        forwardedNewsletterMessageInfo: {
+          newsletterJid: "120363288304618280@newsletter",
+          newsletterName: "PK-XMD Official",
+          serverMessageId: 2
+        },
+        externalAdReply: {
+          title: "PK-XMD Plugin List",
+          body: `Powered by Pkdriller`,
+          mediaType: 1,
+          sourceUrl: "https://github.com/mejjar00254/PK-XMD",
+          renderLargerThumbnail: true,
+          showAdAttribution: true
         }
-      } else if (fileContent.pattern) {
-        const category = (fileContent.category || "Uncategorized").toLowerCase();
-        const cmdName = fileContent.pattern || "unknown";
-        if (!categorized[category]) categorized[category] = [];
-        categorized[category].push(cmdName);
-        allCommands.push(cmdName);
       }
-    } catch (err) {
-      console.error(`❌ Error loading ${file}: ${err}`);
-    }
-  }
-
-  const total = allCommands.length;
-  let list = `╭━━〔 *${botName} - Command List* 〕━━⬣\n`;
-  list += `┃ 👤 Developer: ${developer}\n`;
-  list += `┃ 📦 Total Commands: ${total}\n`;
-  list += `┃ 🧩 Grouped by category:\n`;
-
-  for (const cat in categorized) {
-    list += `┃\n┃ 🔸 *${cat.toUpperCase()}* [${categorized[cat].length}]:\n`;
-    categorized[cat].forEach(c => {
-      list += `┃   ◦ ${c}\n`;
-    });
-  }
-
-  list += `╰━━━━━━━━━━━━━━━━━━━━⬣`;
-
-  const fakeContact = {
-    key: {
-      fromMe: false,
-      participant: '0@s.whatsapp.net',
-      remoteJid: 'status@broadcast'
-    },
-    message: {
-      contactMessage: {
-        displayName: `${botName} | By ${developer}`,
-        vcard: `BEGIN:VCARD\nVERSION:3.0\nFN:${botName} | By ${developer}\nORG:${developer};\nTEL;type=CELL;type=VOICE;waid=254700000000:+254 700 000000\nEND:VCARD`,
-        jpegThumbnail: Buffer.alloc(0)
-      }
-    }
-  };
-
-  await Void.sendMessage(m.chat, {
-    text: list,
-    contextInfo: {
-      forwardingScore: 999,
-      isForwarded: true,
-      mentionedJid: [m.sender],
-      forwardedNewsletterMessageInfo: {
-        newsletterJid: "120363288304618280@newsletter",
-        newsletterName: "PK-XMD Official",
-        serverMessageId: 2
+    }, { quoted: {
+      key: {
+        fromMe: false,
+        participant: '0@s.whatsapp.net',
+        remoteJid: 'status@broadcast'
       },
-      externalAdReply: {
-        title: "PK-XMD Command Explorer",
-        body: "Explore all commands categorized",
-        mediaType: 1,
-        showAdAttribution: true,
-        sourceUrl: "https://github.com/mejjar00254/PK-XMD"
+      message: {
+        contactMessage: {
+          displayName: "PK-XMD | Powered by Pkdriller",
+          vcard: `BEGIN:VCARD\nVERSION:3.0\nFN:PK-XMD | Pkdriller\nORG:Pkdriller;\nTEL;type=CELL;type=VOICE;waid=254700000000:+254 700 000000\nEND:VCARD`,
+          jpegThumbnail: Buffer.alloc(0)
+        }
       }
-    }
-  }, { quoted: fakeContact });
+    }});
+  } catch (err) {
+    console.error(err);
+    await m.reply('❌ Error: Could not fetch the command list.');
+  }
 });
-                               
