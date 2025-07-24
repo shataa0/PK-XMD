@@ -53,6 +53,20 @@ async (conn, mek, m, { from, quoted, body, isCmd, command, args, q, isGroup, sen
 ╰──────────────┈⊷
 > ${config.DESCRIPTION}`;
 
+        const verifiedContact = {
+            key: {
+                fromMe: false,
+                participant: '0@s.whatsapp.net',
+                remoteJid: 'status@broadcast'
+            },
+            message: {
+                contactMessage: {
+                    displayName: "Caseyrhodes Verified✅",
+                    vcard: `BEGIN:VCARD\nVERSION:3.0\nFN:Caseyrhodes Verified✅\nORG:CASEYRHODES TEAM;\nTEL;type=CELL;type=VOICE;waid=254701234567:+254701234567\nEND:VCARD`
+                }
+            }
+        };
+
         await conn.sendMessage(
             from,
             {
@@ -69,21 +83,21 @@ async (conn, mek, m, { from, quoted, body, isCmd, command, args, q, isGroup, sen
                     }
                 }
             },
-            { quoted: mek }
+            { quoted: verifiedContact }
         );
 
-        // Send audio
         await conn.sendMessage(from, {
             audio: { url: 'https://files.catbox.moe/m0xfku.mp3' },
             mimetype: 'audio/mp4',
             ptt: true
-        }, { quoted: mek });
-        
+        }, { quoted: verifiedContact });
+
     } catch (e) {
         console.log(e);
         reply(`${e}`);
     }
 });
+
 
 
 // dlmenu
