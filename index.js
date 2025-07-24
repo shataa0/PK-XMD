@@ -33,7 +33,6 @@ const {
   const qrcode = require('qrcode-terminal')
   const StickersTypes = require('wa-sticker-formatter')
   const util = require('util')
-  const anticall = require('./lib/anticall');
   const { sms, downloadMediaMessage, AntiDelete } = require('./lib')
   const FileType = require('file-type');
   const axios = require('axios')
@@ -159,45 +158,6 @@ const port = process.env.PORT || 9090;
   if (config.READ_MESSAGE === 'true') {
     await conn.readMessages([mek.key]);  // Mark message as read
     console.log(`Marked message from ${mek.key.remoteJid} as read.`);
- conn.ev.on('CB:call', async (json) => {
-    if (!global.ANTICALL1) return;
-    try {
-        const callerId = json.content[0]?.attrs?.from;
-        const callId = json.content[0]?.attrs['call-id'];
-        if (!callerId || !callId) return;
-
-        // Try reject and block independently
-        let rejected = false;
-        let blocked = false;
-
-        try {
-            await conn.rejectCall(callId, callerId);
-            rejected = true;
-            console.log(`[ANTICALL] Rejected call from ${callerId}`);
-        } catch (err) {
-            console.error("[ANTICALL] Failed to reject call:", err);
-        }
-
-        try {
-            await conn.updateBlockStatus(callerId, "block");
-            blocked = true;
-            console.log(`[ANTICALL] Blocked user ${callerId}`);
-        } catch (err) {
-            console.error("[ANTICALL] Failed to block user:", err);
-        }
-
-        // Optional notify
-        if (rejected || blocked) {
-            await conn.sendMessage(callerId, {
-                text: `🚫 Calls are not allowed.\nYour number has been *${rejected ? "rejected" : ""}${rejected && blocked ? " and " : ""}${blocked ? "blocked" : ""}*.`,
-            });
-        }
-
-    } catch (err) {
-        console.error("[ANTICALL ERROR]", err);
-    }
-});
-	  
   }
     if(mek.message.viewOnceMessageV2)
     mek.message = (getContentType(mek.message) === 'ephemeralMessage') ? mek.message.ephemeralMessage.message : mek.message
