@@ -56,7 +56,7 @@ cmd({
           body: `Powered by Pkdriller`,
           mediaType: 1,
           sourceUrl: "https://github.com/mejjar00254/PK-XMD",
-          renderLargerThumbnail: true,
+          renderLargerThumbnail: false,
           showAdAttribution: true
         }
       }
