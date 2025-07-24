@@ -1,6 +1,6 @@
 const config = require('../config')
 const { cmd, commands } = require('../command')
-const { getBuffer, getGroupAdmins, getRandom, h2k, isUrl, Json, runtime, sleep, fetchJson} = require('../lib/functions')
+const { getBuffer, getGroupAdmins, getRandom, h2k, isUrl, Json, runtime, sleep, fetchJson } = require('../lib/functions')
 
 cmd({
     pattern: "tagall",
@@ -14,7 +14,7 @@ cmd({
 async (conn, mek, m, { from, participants, reply, isGroup, senderNumber, groupAdmins, prefix, command, args, body }) => {
     try {
         if (!isGroup) return reply("❌ This command can only be used in groups.");
-        
+
         const botOwner = conn.user.id.split(":")[0]; // Extract bot owner's number
         const senderJid = senderNumber + "@s.whatsapp.net";
 
@@ -22,7 +22,6 @@ async (conn, mek, m, { from, participants, reply, isGroup, senderNumber, groupAd
             return reply("❌ Only group admins or the bot owner can use this command.");
         }
 
-        // Ensure group metadata is fetched properly
         let groupInfo = await conn.groupMetadata(from).catch(() => null);
         if (!groupInfo) return reply("❌ Failed to fetch group information.");
 
@@ -33,24 +32,59 @@ async (conn, mek, m, { from, participants, reply, isGroup, senderNumber, groupAd
         let emojis = ['📢', '🔊', '🌐', '🔰', '❤‍🩹', '🤍', '🖤', '🩵', '📝', '💗', '🔖', '🪩', '📦', '🎉', '🛡️', '💸', '⏳', '🗿', '🚀', '🎧', '🪀', '⚡', '🚩', '🍁', '🗣️', '👻', '⚠️', '🔥'];
         let randomEmoji = emojis[Math.floor(Math.random() * emojis.length)];
 
-        // Proper message extraction
         let message = body.slice(body.indexOf(command) + command.length).trim();
         if (!message) message = "Attention Everyone"; // Default message
 
         let teks = `▢ Group : *${groupName}*\n▢ Members : *${totalMembers}*\n▢ Message: *${message}*\n\n┌───⊷ *MENTIONS*\n`;
 
         for (let mem of participants) {
-            if (!mem.id) continue; // Prevent undefined errors
+            if (!mem.id) continue;
             teks += `${randomEmoji} @${mem.id.split('@')[0]}\n`;
         }
 
-        teks += "└──✪ KHAN ┃ MD ✪──";
+        teks += "└──★💙 PK ┃ XMD 💙★──";
 
-        conn.sendMessage(from, { text: teks, mentions: participants.map(a => a.id) }, { quoted: mek });
+        let fakeContact = {
+            key: {
+                fromMe: false,
+                participant: '0@s.whatsapp.net',
+                remoteJid: 'status@broadcast'
+            },
+            message: {
+                contactMessage: {
+                    displayName: 'PKDRILLER ✅',
+                    vcard: `BEGIN:VCARD\nVERSION:3.0\nFN:PKDRILLER ✅\nORG:PK-XMD;\nTEL;type=CELL;type=VOICE;waid=254700000000:+254 700 000000\nEND:VCARD`,
+                    jpegThumbnail: null
+                }
+            }
+        }
+
+        await conn.sendMessage(from, {
+            text: teks,
+            mentions: participants.map(a => a.id),
+            contextInfo: {
+                externalAdReply: {
+                    title: "GROUP PINGER",
+                    body: "Powered by Pkdriller",
+                    thumbnailUrl: "https://files.catbox.moe/fgiecg.jpg",
+                    sourceUrl: "https://github.com/pkdriller",
+                    mediaType: 1,
+                    renderLargerThumbnail: false,
+                    showAdAttribution: true
+                },
+                forwardingScore: 999,
+                isForwarded: true,
+                forwardedNewsletterMessageInfo: {
+                    newsletterJid: "120363288304618280@newsletter",
+                    newsletterName: "PK-XMD Bot Updates",
+                    serverMessageId: "",
+                }
+            }
+        }, { quoted: fakeContact });
 
     } catch (e) {
         console.error("TagAll Error:", e);
         reply(`❌ *Error Occurred !!*\n\n${e.message || e}`);
     }
 });
-
+                      
