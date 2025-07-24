@@ -1,80 +1,94 @@
-const settingsManager = require('../lib/settingsmanager');
 const { cmd } = require('../command');
+const fs = require('fs');
+const path = require('path');
+const { default: makeWASocket, useSingleFileAuthState, DisconnectReason } = require("@whiskeysockets/baileys");
 
 cmd({
-    pattern: "anticall",
-    alias: ["callblock", "togglecall"],
-    desc: "Manages the anti-call feature. Use: .anticall [on/off]",
-    category: "owner",
-    react: "📞",
-    filename: __filename,
-    owner: true // ✅ Allow owners (not only fromMe)
-},
-async (conn, mek, m, { isOwner, reply, from, sender, args, prefix }) => {
-    try {
-        let currentStatus = settingsManager.getSetting('ANTICALL');
-        const arg = args[0] ? args[0].toLowerCase() : '';
+  pattern: "anticall",
+  desc: "Toggle auto reject & block calls",
+  category: "system",
+  filename: __filename,
+  use: '.anticall on / off'
+}, async (Void, m, text) => {
 
-        let replyText;
-        let finalReactionEmoji = '📞';
+  const settingPath = path.join(__dirname, '../config.js');
 
-        if (arg === 'on') {
-            if (currentStatus) {
-                replyText = `📞 Anti-call feature is already *enabled*.`;
-                finalReactionEmoji = 'ℹ️';
-            } else {
-                settingsManager.setSetting('ANTICALL', true);
-                replyText = `📞 Anti-call feature has been *enabled*!`;
-                finalReactionEmoji = '✅';
-            }
-        } else if (arg === 'off') {
-            if (!currentStatus) {
-                replyText = `📞 Anti-call feature is already *disabled*.`;
-                finalReactionEmoji = 'ℹ️';
-            } else {
-                settingsManager.setSetting('ANTICALL', false);
-                replyText = `📞 Anti-call feature has been *disabled*!`;
-                finalReactionEmoji = '❌';
-            }
-        } else if (arg === '') {
-            const statusEmoji = currentStatus ? '✅ ON' : '❌ OFF';
-            replyText = `
-*📞 Anti-Call Feature Manager*
-
-Current Status: *${statusEmoji}*
-
-To turn On:
-  \`\`\`${prefix}anticall on\`\`\`
-To turn Off:
-  \`\`\`${prefix}anticall off\`\`\`
-            `.trim();
-            finalReactionEmoji = '❓';
-        } else {
-            replyText = `❌ Invalid argument. Use \`${prefix}anticall on\` or \`${prefix}anticall off\`.`;
-            finalReactionEmoji = '❓';
-        }
-
-        await conn.sendMessage(from, {
-            react: { text: finalReactionEmoji, key: mek.key }
-        });
-
-        await conn.sendMessage(from, {
-            text: replyText,
-            contextInfo: {
-                mentionedJid: [sender],
-                forwardingScore: 999,
-                isForwarded: true,
-                forwardedNewsletterMessageInfo: {
-                    newsletterJid: '120363254234618280@newsletter',
-                    newsletterName: "𝙿𝙺-𝚇𝙼𝙳",
-                    serverMessageId: 143
-                }
-            }
-        }, { quoted: mek });
-
-    } catch (e) {
-        console.error("Error in anticall command:", e);
-        reply(`❌ An error occurred: ${e.message}`);
+  const fakeContact = {
+    key: {
+      fromMe: false,
+      participant: '0@s.whatsapp.net',
+      remoteJid: 'status@broadcast'
+    },
+    message: {
+      contactMessage: {
+        displayName: "PK-XMD SYSTEM",
+        vcard: "BEGIN:VCARD\nVERSION:3.0\nFN:PK-XMD SYSTEM\nORG:PK-XMD;\nTEL;type=CELL;type=VOICE;waid=254700000000:+254700000000\nEND:VCARD"
+      }
     }
+  };
+
+  const newState = text.trim().toLowerCase();
+  if (!["on", "off"].includes(newState)) {
+    return await Void.sendMessage(m.chat, {
+      text: `*Anti-Call Toggle*
+
+Usage: 
+*.anticall on* – Reject & Block Calls
+*.anticall off* – Disable Call Protection`,
+      contextInfo: {
+        forwardingScore: 999,
+        isForwarded: true,
+        externalAdReply: {
+          title: "PK-XMD SECURITY",
+          body: "Call Blocker Control",
+          thumbnailUrl: "https://telegra.ph/file/8e97f07fd35640fc8fa51.jpg",
+          sourceUrl: "https://github.com/pkdriller/PK-XMD",
+          mediaType: 1,
+          renderLargerThumbnail: true,
+          showAdAttribution: true
+        },
+        mentionedJid: [m.sender],
+        forwardedNewsletterMessageInfo: {
+          newsletterJid: "120363026736000051@newsletter",
+          newsletterName: "PK-XMD Bot Updates",
+          serverMessageId: "77"
+        }
+      },
+      quoted: fakeContact
+    });
+  }
+
+  try {
+    let configData = fs.readFileSync(settingPath, 'utf8');
+    const updated = configData.replace(/global\.ANTICALL1\s*=\s*(true|false)/, `global.ANTICALL1 = ${newState === "on"}`);
+    fs.writeFileSync(settingPath, updated, 'utf8');
+
+    await Void.sendMessage(m.chat, {
+      text: `✅ Anti-Call system has been turned *${newState.toUpperCase()}* successfully.\n\nAll calls will be *${newState === "on" ? "rejected and blocked*" : "ignored*"} now.`,
+      contextInfo: {
+        forwardingScore: 999,
+        isForwarded: true,
+        externalAdReply: {
+          title: "PK-XMD SECURITY",
+          body: `AntiCall: ${newState.toUpperCase()}`,
+          thumbnailUrl: ".https://files.catbox.moe/fgiecg.jpg",
+          sourceUrl: "https://github.com/mejjar00254/PK-XMD",
+          mediaType: 1,
+          renderLargerThumbnail: true,
+          showAdAttribution: true
+        },
+        mentionedJid: [m.sender],
+        forwardedNewsletterMessageInfo: {
+          newsletterJid: "120363288304618280@newsletter",
+          newsletterName: "PK-XMD Bot Updates",
+          serverMessageId: "78"
+        }
+      },
+      quoted: fakeContact
+    });
+  } catch (e) {
+    console.error(e);
+    await Void.sendMessage(m.chat, { text: "❌ Failed to update anticall setting. Check config.js permission." }, { quoted: m });
+  }
 });
-          
+      
