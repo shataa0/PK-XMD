@@ -1,82 +1,67 @@
-const axios = require('axios');
 const { cmd } = require('../command');
 
 cmd({
   pattern: "repo",
-  desc: "Display bot GitHub repository and deploy guide",
+  desc: "Show bot repository and deploy info",
   category: "system",
-  react: "🗂️",
+  react: "📦",
   filename: __filename
-}, 
-async (conn, m, { from }) => {
-  try {
-    const repo = "mejjar00254/PK-XMD";
-    const api = `https://api.github.com/repos/${repo}`;
-    const { data } = await axios.get(api);
+}, async (conn, m, { from }) => {
 
-    const text = `
-╭───❖ 「 *PK-XMD - GitHub Repo* 」 ❖───⬣
-│🔹 *Name:* ${data.name}
-│🔸 *Owner:* ${data.owner.login}
-│📦 *Repo:* ${data.full_name}
-│⭐ *Stars:* ${data.stargazers_count}
-│🍴 *Forks:* ${data.forks_count}
-│📂 *Open Issues:* ${data.open_issues}
-│📅 *Created:* ${new Date(data.created_at).toDateString()}
-│🌐 *URL:* ${data.html_url}
+  const text = `
+╭───❖ 「 *PK-XMD GitHub Repo* 」 ❖───⬣
+│🔹 *Name:* PK-XMD
+│🔸 *Owner:* mejjar00254
+│📦 *Repo:* PK-XMD
+│🌐 *URL:* https://github.com/mejjar00254/PK-XMD
+│🧑‍💻 *Maintainer:* Pkdriller
 ╰──────────────────────────────⬣
 
-📘 *Description:* ${data.description || "No description available"}
+📘 *Description:*
+PK-XMD is a Multi-functional WhatsApp Bot using Baileys library with powerful features and auto-deploy support.
 
-🚀 *Deploy This Bot Easily On:*
-┌──────────────┐
+🚀 *Deploy This Bot On:*
+┌────────────────────┐
 │ 🌐 Render.com
 │ 🛠️ Railway.app
 │ ☁️ Heroku.com
-└──────────────┘
+└────────────────────┘
 
-📍 Just clone the repo and follow the setup instructions.
-Node.js v18+ and Baileys are required.
+📍 Simply fork or clone the repo, edit config file, and deploy using your preferred platform.
 
-🔗 *GitHub:* ${data.html_url}
-🧑‍💻 *Maintainer:* Pkdriller
-⚡ *Powered by:* PKDRILLER
+🔗 *GitHub:* https://github.com/mejjar00254/PK-XMD
+⚡ *Powered by:* Pkdriller
 `;
 
-    const vcard = {
-      displayName: "PK-XMD Bot",
-      vcard: `BEGIN:VCARD\nVERSION:3.0\nFN:PK-XMD Bot\nORG:PK-XMD Official;\nTEL;type=CELL;type=VOICE;waid=254700000000:+254700000000\nX-USER-TYPE:BOT\nEND:VCARD`
-    };
+  const vcard = {
+    displayName: "PK-XMD Bot",
+    vcard: `BEGIN:VCARD\nVERSION:3.0\nFN:PK-XMD Bot\nORG:PK-XMD Official;\nTEL;type=CELL;type=VOICE;waid=254700000000:+254700000000\nX-USER-TYPE:BOT\nEND:VCARD`
+  };
 
-    await conn.sendMessage(from, {
-      text,
-      contextInfo: {
-        mentionedJid: [m.sender],
-        externalAdReply: {
-          title: "PK-XMD GitHub Repository",
-          body: "Deploy on Render | Railway | Heroku",
-          thumbnailUrl: "https://files.catbox.moe/fgiecg.jpg", // You can replace with your logo
-          sourceUrl: data.html_url,
-          mediaType: 1,
-          showAdAttribution: true,
-          renderLargerThumbnail: true
-        },
-        forwardedNewsletterMessageInfo: {
-          newsletterName: "PK-XMD Bot Updates",
-          newsletterJid: "120363288304618280@newsletter"
-        },
-        quotedMessage: {
-          contactMessage: {
-            displayName: "PK-XMD",
-            vcard: vcard.vcard
-          }
+  await conn.sendMessage(from, {
+    text,
+    contextInfo: {
+      mentionedJid: [m.sender],
+      externalAdReply: {
+        title: "PK-XMD GitHub Repo",
+        body: "Deploy easily on Render | Railway | Heroku",
+        thumbnailUrl: "https://files.catbox.moe/fgiecg.jpg",
+        sourceUrl: "https://github.com/mejjar00254/PK-XMD",
+        mediaType: 1,
+        showAdAttribution: true,
+        renderLargerThumbnail: true
+      },
+      forwardedNewsletterMessageInfo: {
+        newsletterName: "PK-XMD Updates",
+        newsletterJid: "120363288304618280@newsletter"
+      },
+      quotedMessage: {
+        contactMessage: {
+          displayName: "PK-XMD",
+          vcard: vcard.vcard
         }
       }
-    }, { quoted: m });
-
-  } catch (e) {
-    console.error(e);
-    return m.reply("❌ Failed to fetch GitHub repo info. Please try again later.");
-  }
+    }
+  }, { quoted: m });
 });
-          
+      
