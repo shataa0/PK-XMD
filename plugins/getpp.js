@@ -44,7 +44,7 @@ async (conn, mek, m, { from, sender, reply, isGroup }) => {
         forwardingScore: 5,
         isForwarded: true,
         forwardedNewsletterMessageInfo: {
-          newsletterName: "NEXUS-XMD",
+          newsletterName: "PK-XMD",
           newsletterJid: "120363288304618280@newsletter"
         }
       }
