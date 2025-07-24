@@ -5,7 +5,7 @@ const moment = require('moment-timezone');
 
 cmd({
   pattern: "listmenu",
-  alias: ["commandlist", "cmdlist"],
+  alias: ["commandlist", "help"],
   desc: "Fetch and display all available bot commands",
   category: "system",
   filename: __filename,
