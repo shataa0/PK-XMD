@@ -10,7 +10,7 @@ cmd({
 }, async (Void, m, text, { prefix }) => {
 
   const botName = 'PK-XMD';
-  const repoUrl = 'https://github.com/pkdriller/PK-XMD'; // badilisha kama iko tofauti
+  const repoUrl = 'https://github.com/mejjar00254/PK-XMD'; // badilisha kama iko tofauti
   const developer = 'Pkdriller';
 
   const fakeContact = {
