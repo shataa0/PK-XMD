@@ -3,80 +3,80 @@ const { cmd } = require('../command');
 
 cmd({
   pattern: "repo",
-  desc: "Show the official bot repository",
+  desc: "Display bot GitHub repository and deploy guide",
   category: "system",
-  react: "📁",
+  react: "🗂️",
   filename: __filename
 }, 
-async (conn, m, { from, prefix }) => {
+async (conn, m, { from }) => {
   try {
-    const repo = "mejjar00254/PK-XMD"; // Replace with your actual GitHub repo
-    const apiUrl = `https://api.github.com/repos/${repo}`;
-    const { data } = await axios.get(apiUrl);
+    const repo = "mejjar00254/PK-XMD";
+    const api = `https://api.github.com/repos/${repo}`;
+    const { data } = await axios.get(api);
 
-    const txt = `
-*📦 PK-XMD - Official GitHub Repository*
+    const text = `
+╭───❖ 「 *PK-XMD - GitHub Repo* 」 ❖───⬣
+│🔹 *Name:* ${data.name}
+│🔸 *Owner:* ${data.owner.login}
+│📦 *Repo:* ${data.full_name}
+│⭐ *Stars:* ${data.stargazers_count}
+│🍴 *Forks:* ${data.forks_count}
+│📂 *Open Issues:* ${data.open_issues}
+│📅 *Created:* ${new Date(data.created_at).toDateString()}
+│🌐 *URL:* ${data.html_url}
+╰──────────────────────────────⬣
 
-📌 *Name:* ${data.name}
-🧑‍💻 *Owner:* ${data.owner.login}
-🌐 *URL:* ${data.html_url}
-📄 *Description:* ${data.description || "No description provided"}
-⭐ *Stars:* ${data.stargazers_count}
-🍴 *Forks:* ${data.forks_count}
-🔧 *Issues:* ${data.open_issues}
-📅 *Created:* ${new Date(data.created_at).toDateString()}
+📘 *Description:* ${data.description || "No description available"}
 
-────────────────────
-🚀 *How to Deploy PK-XMD Bot*
+🚀 *Deploy This Bot Easily On:*
+┌──────────────┐
+│ 🌐 Render.com
+│ 🛠️ Railway.app
+│ ☁️ Heroku.com
+└──────────────┘
 
-You can deploy this WhatsApp MD bot on:
+📍 Just clone the repo and follow the setup instructions.
+Node.js v18+ and Baileys are required.
 
-🔹 [Render](https://render.com)
-🔹 [Railway](https://railway.app)
-🔹 [Heroku](https://heroku.com)
-
-Clone the repo and follow setup instructions in the README. Node.js & Baileys is required.
-
-🔗 GitHub: ${data.html_url}
-📖 Docs: Check the README file in the repo
-
-> ⚡ *Powered by Pkdriller* ⚡
+🔗 *GitHub:* ${data.html_url}
+🧑‍💻 *Maintainer:* Pkdriller
+⚡ *Powered by:* PKDRILLER
 `;
 
     const vcard = {
-      displayName: "PK-XMD",
-      vcard: `BEGIN:VCARD\nVERSION:3.0\nFN:PK-XMD Bot\nORG:PK-XMD Official;\nTEL;type=CELL;type=VOICE;waid=254700000000:+254 700 000000\nX-USER-TYPE:BOT\nEND:VCARD`
+      displayName: "PK-XMD Bot",
+      vcard: `BEGIN:VCARD\nVERSION:3.0\nFN:PK-XMD Bot\nORG:PK-XMD Official;\nTEL;type=CELL;type=VOICE;waid=254700000000:+254700000000\nX-USER-TYPE:BOT\nEND:VCARD`
     };
 
     await conn.sendMessage(from, {
-      text: txt.trim(),
+      text,
       contextInfo: {
         mentionedJid: [m.sender],
         externalAdReply: {
           title: "PK-XMD GitHub Repository",
-          body: "Deploy to Railway | Heroku | Render",
-          thumbnailUrl: "https://files.catbox.moe/fgiecg.jpg", // optional image URL
+          body: "Deploy on Render | Railway | Heroku",
+          thumbnailUrl: "https://files.catbox.moe/fgiecg.jpg", // You can replace with your logo
           sourceUrl: data.html_url,
           mediaType: 1,
-          renderLargerThumbnail: true,
-          showAdAttribution: true
+          showAdAttribution: true,
+          renderLargerThumbnail: true
         },
         forwardedNewsletterMessageInfo: {
-          newsletterName: "PK-XMD Bot",
+          newsletterName: "PK-XMD Bot Updates",
           newsletterJid: "120363288304618280@newsletter"
         },
         quotedMessage: {
           contactMessage: {
-            displayName: "PK-XMD Bot",
+            displayName: "PK-XMD",
             vcard: vcard.vcard
           }
         }
       }
     }, { quoted: m });
 
-  } catch (err) {
-    console.error("Error fetching repo:", err);
-    return m.reply("❌ Failed to fetch repository info. Please check the repo name or try again later.");
+  } catch (e) {
+    console.error(e);
+    return m.reply("❌ Failed to fetch GitHub repo info. Please try again later.");
   }
 });
           
