@@ -1,4 +1,4 @@
-// code by ⿻ ⌜ 𝐊𝐇𝐀𝐍 ⌟⿻⃮͛🇵🇰𖤐
+
 
 const axios = require("axios");
 const { cmd } = require("../command");
@@ -69,7 +69,7 @@ cmd({
     await conn.sendMessage(from, {
         image: { url: `https://image.thum.io/get/fullpage/${url}` },
         caption: "- 🖼️ *Screenshot Generated*\n\n" +
-                "> Powered By JawadTechX 💜"
+                "> Powered By Pkdriller 🔮"
     }, { quoted: mek });
 
   } catch (error) {
@@ -78,4 +78,3 @@ cmd({
   }
 });
 
-// ⿻ ⌜ 𝐊𝐇𝐀𝐍 ⌟⿻⃮͛🇵🇰𖤐
