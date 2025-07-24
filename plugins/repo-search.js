@@ -3,33 +3,66 @@ const { cmd } = require("../command");
 
 cmd({
   pattern: "srepo",
-  desc: "Fetch information about a GitHub repository.",
+  desc: "Fetch info about a GitHub repository.",
   category: "other",
-  react: "🍃",
+  react: "📁",
   filename: __filename
 }, async (conn, m, store, { from, args, reply }) => {
   try {
     const repoName = args.join(" ");
-    if (!repoName) {
-      return reply("❌ Please provide a GitHub repository in the format 📌 `owner/repo`.");
-    }
+    if (!repoName) return reply("❗ Usage: .srepo owner/repo");
 
     const apiUrl = `https://api.github.com/repos/${repoName}`;
     const { data } = await axios.get(apiUrl);
 
-    let responseMsg = `📁 *GitHub Repository Info* 📁\n\n`;
-    responseMsg += `📌 *Name*: ${data.name}\n`;
-    responseMsg += `🔗 *URL*: ${data.html_url}\n`;
-    responseMsg += `📝 *Description*: ${data.description || "No description"}\n`;
-    responseMsg += `⭐ *Stars*: ${data.stargazers_count}\n`;
-    responseMsg += `🍴 *Forks*: ${data.forks_count}\n`;
-    responseMsg += `👤 *Owner*: ${data.owner.login}\n`;
-    responseMsg += `📅 *Created At*: ${new Date(data.created_at).toLocaleDateString()}\n`;
-    responseMsg += `\n> *© Powered by JawadTechX*`;
+    let msg = `*🔍 GitHub Repository Info:*\n\n`;
+    msg += `📦 *Name*: ${data.name}\n`;
+    msg += `🌐 *URL*: ${data.html_url}\n`;
+    msg += `🧾 *Description*: ${data.description || "No description"}\n`;
+    msg += `⭐ *Stars*: ${data.stargazers_count}\n`;
+    msg += `🍴 *Forks*: ${data.forks_count}\n`;
+    msg += `👤 *Owner*: ${data.owner.login}\n`;
+    msg += `🗓️ *Created*: ${new Date(data.created_at).toLocaleDateString()}\n\n`;
+    msg += `🔗 *Powered by Pkdriller*`;
 
-    await conn.sendMessage(from, { text: responseMsg }, { quoted: m });
+    const fakeContact = {
+      key: {
+        participants: "0@s.whatsapp.net",
+        remoteJid: "status@broadcast",
+        fromMe: false,
+        id: 'V1X-REPO-CHECK'
+      },
+      message: {
+        contactMessage: {
+          displayName: "GitHub Bot Verified",
+          vcard: `BEGIN:VCARD\nVERSION:3.0\nFN:GitHub Official\nORG:GitHub Inc.\nTEL;type=CELL;type=VOICE;waid=254700000000:+254 700 000000\nEND:VCARD`
+        }
+      }
+    };
+
+    const contextInfo = {
+      forwardingScore: 999,
+      isForwarded: true,
+      externalAdReply: {
+        title: "GitHub Repository",
+        body: "Search by PK-XMD",
+        thumbnailUrl: "https://files.catbox.moe/lvrpek.jpg",
+        mediaType: 1,
+        renderLargerThumbnail: true,
+        showAdAttribution: true,
+        sourceUrl: data.html_url
+      },
+      forwardedNewsletterMessageInfo: {
+        newsletterJid: "120363288304618280@newsletter",
+        newsletterName: "GitHub Verified",
+        serverMessageId: "",
+      }
+    };
+
+    await conn.sendMessage(from, { text: msg }, { quoted: fakeContact, contextInfo });
   } catch (error) {
     console.error("GitHub API Error:", error);
-    reply(`❌ Error fetching repository data: ${error.response?.data?.message || error.message}`);
+    return reply(`❌ Error: ${error.response?.data?.message || error.message}`);
   }
 });
+        
