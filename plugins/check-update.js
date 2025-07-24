@@ -16,6 +16,21 @@ cmd({
   from, sender, pushname, reply
 }) => {
   try {
+    // Fake verified contact for quoted message
+    const vcardContact = {
+      key: {
+        fromMe: false,
+        participant: '0@s.whatsapp.net',
+        remoteJid: "status@broadcast"
+      },
+      message: {
+        contactMessage: {
+          displayName: "PKDRILLER",
+          vcard: `BEGIN:VCARD\nVERSION:3.0\nN:PK-XMD;;;\nFN:PKDRILLER✓\nORG:PK-XMD Developer;\nTEL;type=CELL;type=VOICE;waid=254700000000:+254700000000\nEND:VCARD`
+        }
+      }
+    };
+
     // Read local version data
     const localVersionPath = path.join(__dirname, '../data/version.json');
     let localVersion = 'Unknown';
@@ -27,7 +42,7 @@ cmd({
     }
 
     // Fetch latest version data from GitHub
-    const rawVersionUrl = 'https://raw.githubusercontent.com/JawadYT36/KHAN-MD/main/data/version.json';
+    const rawVersionUrl = 'https://raw.githubusercontent.com/mejjar00254/PK-XMD/main/data/version.json';
     let latestVersion = 'Unknown';
     let latestChangelog = 'No changelog available.';
     try {
@@ -46,32 +61,28 @@ cmd({
     const totalCommands = commands.length;
 
     // System info
-    const uptime = runtime(process.uptime());
+    const uptimeStr = runtime(process.uptime());
     const ramUsage = (process.memoryUsage().heapUsed / 1024 / 1024).toFixed(2);
     const totalRam = (os.totalmem() / 1024 / 1024).toFixed(2);
     const hostName = os.hostname();
     const lastUpdate = fs.statSync(localVersionPath).mtime.toLocaleString();
 
     // GitHub stats
-    const githubRepo = 'https://github.com/JawadYT36/KHAN-MD';
+    const githubRepo = 'https://github.com/mejjar00254/Last-bot';
 
     // Check update status
-    let updateMessage = `✅ Your KHAN-MD bot is up-to-date!`;
+    let updateMessage = `✅ Your *PK-XMD* bot is up-to-date!`;
     if (localVersion !== latestVersion) {
-      updateMessage = `🚀 Your KHAN-MD bot is outdated!
-🔹 *Current Version:* ${localVersion}
-🔹 *Latest Version:* ${latestVersion}
-
-Use *.update* to update.`;
+      updateMessage = `🚀 Your *PK-XMD* bot is outdated!\n🔹 *Current Version:* ${localVersion}\n🔹 *Latest Version:* ${latestVersion}\n\nUse *.update* to update.`;
     }
 
-    const statusMessage = `🌟 *Good ${new Date().getHours() < 12 ? 'Morning' : 'Night'}, ${pushname}!* 🌟\n\n` +
-      `📌 *Bot Name:* KHAN-MD\n🔖 *Current Version:* ${localVersion}\n📢 *Latest Version:* ${latestVersion}\n📂 *Total Plugins:* ${pluginCount}\n🔢 *Total Commands:* ${totalCommands}\n\n` +
-      `💾 *System Info:*\n⏳ *Uptime:* ${uptime}\n📟 *RAM Usage:* ${ramUsage}MB / ${totalRam}MB\n⚙️ *Host Name:* ${hostName}\n📅 *Last Update:* ${lastUpdate}\n\n` +
+    const statusMessage = `🌟 *Good ${new Date().getHours() < 12 ? 'Morning' : 'Evening'}, ${pushname}!* 🌟\n\n` +
+      `🤖 *Bot Name:* PK-XMD\n🔖 *Current Version:* ${localVersion}\n📢 *Latest Version:* ${latestVersion}\n📂 *Total Plugins:* ${pluginCount}\n🔢 *Total Commands:* ${totalCommands}\n\n` +
+      `💾 *System Info:*\n⏳ *Uptime:* ${uptimeStr}\n📟 *RAM Usage:* ${ramUsage}MB / ${totalRam}MB\n⚙️ *Host Name:* ${hostName}\n📅 *Last Update:* ${lastUpdate}\n\n` +
       `📝 *Changelog:*\n${latestChangelog}\n\n` +
-      `⭐ *GitHub Repo:* ${githubRepo}\n👤 *Owner:* [JawadTechX](https://github.com/JawadYT36)\n\n${updateMessage}\n\n🚀 *Hey! Don't forget to fork & star the repo!*`;
+      `🌐 *GitHub Repo:* ${githubRepo}\n👤 *Owner:* [Pkdriller](https://github.com/pkdriller)\n\n${updateMessage}\n\n🚀 *Don’t forget to star & fork the repo!*`;
 
-    // Send the status message with an image
+    // Send image with status
     await conn.sendMessage(from, {
       image: { url: 'https://files.catbox.moe/7zfdcq.jpg' },
       caption: statusMessage,
@@ -80,14 +91,16 @@ Use *.update* to update.`;
         forwardingScore: 999,
         isForwarded: true,
         forwardedNewsletterMessageInfo: {
-          newsletterJid: '120363354023106228@newsletter',
-          newsletterName: 'JawadTechX',
-          serverMessageId: 143
+          newsletterJid: '120363288304618280@newsletter',
+          newsletterName: 'PK-XMD Official',
+          serverMessageId: 97
         }
       }
-    }, { quoted: mek });
+    }, { quoted: vcardContact });
+
   } catch (error) {
-    console.error('Error fetching version info:', error);
-    reply('❌ An error occurred while checking the bot version.');
+    console.error('Error checking version info:', error);
+    reply('❌ Error: Failed to check version info.');
   }
 });
+                      
