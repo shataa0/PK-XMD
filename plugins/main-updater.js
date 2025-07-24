@@ -8,57 +8,58 @@ const { setCommitHash, getCommitHash } = require('../data/updateDB');
 cmd({
   pattern: "update",
   alias: ["upgrade", "sync"],
-  react: '🧬',
-  desc: "Update the bot to the latest version.",
+  react: '🧠',
+  desc: "Update PK-XMD bot from GitHub.",
   category: "system",
   filename: __filename
 }, async (conn, m, text, { reply, isOwner }) => {
-  if (!isOwner) return reply("❌ Only the owner can perform an update.");
+  if (!isOwner) return reply("❌ Only owner can use this command!");
 
   try {
-    await reply("🔍 Checking for PK-XMD updates...");
+    await reply("🔎 Checking for PK-XMD updates...");
 
-    // Get latest commit from GitHub API
-    const { data } = await axios.get('https://api.github.com/repos/mejjar00254/PK-XMD/commits/main');
-    const latestHash = data.sha;
+    const repo = "mejjar00254/PK-XMD";
 
+    const latestCommit = await axios.get(`https://api.github.com/repos/${repo}/commits/main`);
+    const latestHash = latestCommit.data.sha;
     const currentHash = await getCommitHash();
-    if (currentHash === latestHash) {
-      return reply("✅ PK-XMD is already up-to-date.");
+
+    if (latestHash === currentHash) {
+      return reply("✅ You are already using the latest version of PK-XMD!");
     }
 
-    await reply("🚀 Update available! Downloading new files...");
+    await reply("📥 Downloading latest version...");
+    const zipUrl = `https://github.com/${repo}/archive/refs/heads/main.zip`;
+    const zipPath = path.join(__dirname, "latest.zip");
 
-    const zipUrl = "https://github.com/mejjar00254/PK-XMD/archive/refs/heads/main.zip";
-    const zipPath = path.join(__dirname, "pkxmd_update.zip");
-    const { data: zipData } = await axios.get(zipUrl, { responseType: "arraybuffer" });
-    fs.writeFileSync(zipPath, zipData);
+    const zipData = await axios.get(zipUrl, { responseType: "arraybuffer" });
+    fs.writeFileSync(zipPath, zipData.data);
 
-    const extractPath = path.join(__dirname, 'update_extract');
+    const extractPath = path.join(__dirname, "latest");
     const zip = new AdmZip(zipPath);
     zip.extractAllTo(extractPath, true);
 
-    await reply("📦 Extracting and replacing files...");
+    await reply("🧩 Extracted. Replacing old files...");
 
-    const source = path.join(extractPath, "PK-XMD-main");
-    const destination = path.join(__dirname, '..');
-    copyFolderSync(source, destination);
+    const sourcePath = path.join(extractPath, "PK-XMD-main");
+    const destinationPath = path.join(__dirname, "..");
+
+    copyFolderSync(sourcePath, destinationPath);
 
     await setCommitHash(latestHash);
 
     fs.unlinkSync(zipPath);
     fs.rmSync(extractPath, { recursive: true, force: true });
 
-    await reply("✅ Update complete! Restarting PK-XMD...");
+    await reply("✅ Update completed successfully! Restarting...");
     process.exit(0);
 
   } catch (err) {
-    console.error(err);
-    return reply("❌ Update failed. Try manually or check logs.");
+    console.error("Update error:", err);
+    return reply("❌ Update failed. Try again later or check logs.");
   }
 });
 
-// Copy folders but skip personal settings
 function copyFolderSync(source, target) {
   if (!fs.existsSync(target)) fs.mkdirSync(target, { recursive: true });
 
@@ -67,10 +68,7 @@ function copyFolderSync(source, target) {
     const src = path.join(source, item);
     const dest = path.join(target, item);
 
-    if (["config.js", "app.json", "session", "auth_info"].includes(item)) {
-      console.log(`🔒 Skipping ${item}`);
-      continue;
-    }
+    if (["config.js", "app.json", ".env"].includes(item)) continue;
 
     if (fs.lstatSync(src).isDirectory()) {
       copyFolderSync(src, dest);
@@ -78,5 +76,5 @@ function copyFolderSync(source, target) {
       fs.copyFileSync(src, dest);
     }
   }
-                             
-                          
+      }
+      
