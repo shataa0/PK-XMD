@@ -2,8 +2,8 @@ const config = require('../config')
 const { cmd, commands } = require('../command');
 const path = require('path');
 const fs = require('fs');
-const { runtime } = require('../lib/functions')
-const axios = require('axios')
+const { runtime } = require('../lib/functions');
+const axios = require('axios');
 
 cmd({
   pattern: "menu2",
@@ -33,6 +33,9 @@ async (conn, mek, m, { from, reply }) => {
       }
     }
 
+    // Invisible character for readmore effect
+    const readMore = String.fromCharCode(8206).repeat(4001);
+
     let dec = `*╭────⬡ ${config.BOT_NAME} ⬡────⭓*\n` +
       `*├▢ 🤖 Owner:* ${config.OWNER_NAME}\n` +
       `*├▢ 📜 Commands:* ${totalCommands}\n` +
@@ -42,8 +45,24 @@ async (conn, mek, m, { from, reply }) => {
       `*├▢ ⚙️ Mode:* ${config.MODE}\n` +
       `*├▢ 🏷️ Version:* 5.0.0 Bᴇᴛᴀ\n` +
       `*╰─────────────────⭓*\n\n` +
+      readMore + '\n' + // Read More Here
       commandList.join('\n\n') +
       `\n\n${config.DESCRIPTION}`;
+
+    // Fake verified vCard as quoted message
+    const fakeContact = {
+      key: {
+        fromMe: false,
+        participant: "0@s.whatsapp.net",
+        ...(from ? { remoteJid: from } : {})
+      },
+      message: {
+        contactMessage: {
+          displayName: `${config.OWNER_NAME}`,
+          vcard: `BEGIN:VCARD\nVERSION:3.0\nFN:${config.OWNER_NAME}\nORG:PK-XMD;\nTEL;type=CELL;type=VOICE;waid=${config.OWNER_NUMBER}:${config.OWNER_NUMBER}\nEND:VCARD`
+        }
+      }
+    };
 
     await conn.sendMessage(from, {
       image: { url: config.MENU_IMAGE_URL || 'https://files.catbox.moe/7zfdcq.jpg' },
@@ -58,11 +77,11 @@ async (conn, mek, m, { from, reply }) => {
           serverMessageId: 143
         }
       }
-    }, { quoted: mek });
+    }, { quoted: fakeContact });
 
   } catch (e) {
     console.log(e);
     reply(`Error: ${e}`);
   }
 });
-        
+      
