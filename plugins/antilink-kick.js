@@ -61,7 +61,7 @@ cmd({
       await conn.sendMessage(from, { delete: m.key }, { quoted: m });
 
       await conn.sendMessage(from, {
-        text: `⚠️ Links are not allowed in this group.\n@${sender.split('@')[0]} has been removed. 🚫`,
+        text: `⚠️ Boss i don't have time your links am PK-XMD.\n@${sender.split('@')[0]} byeee remember me😂🔥👑. 🚫`,
         mentions: [sender],
         contextInfo: {
           externalAdReply: {
