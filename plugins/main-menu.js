@@ -33,10 +33,7 @@ async (conn, mek, m, { from, reply }) => {
       }
     }
 
-    // Invisible character for readmore effect
-    const readMore = String.fromCharCode(8206).repeat(4001);
-
-    let dec = `*╭────⬡ ${config.BOT_NAME} ⬡────⭓*\n` +
+    let descTop = `*╭────⬡ ${config.BOT_NAME} ⬡────⭓*\n` +
       `*├▢ 🤖 Owner:* ${config.OWNER_NAME}\n` +
       `*├▢ 📜 Commands:* ${totalCommands}\n` +
       `*├▢ ⏱️ Runtime:* ${runtime(process.uptime())}\n` +
@@ -44,44 +41,44 @@ async (conn, mek, m, { from, reply }) => {
       `*├▢ ☁️ Platform:* Heroku\n` +
       `*├▢ ⚙️ Mode:* ${config.MODE}\n` +
       `*├▢ 🏷️ Version:* 5.0.0 Bᴇᴛᴀ\n` +
-      `*╰─────────────────⭓*\n\n` +
-      readMore + '\n' + // Read More Here
-      commandList.join('\n\n') +
-      `\n\n${config.DESCRIPTION}`;
+      `*╰─────────────────⭓*\n\n`;
 
-    // Fake verified vCard as quoted message
-    const fakeContact = {
+    const readMore = String.fromCharCode(8206).repeat(4001);
+    const finalCaption = descTop + readMore + commandList.join('\n\n') + `\n\n${config.DESCRIPTION}`;
+
+    // Create fake verified contact
+    const vcardMessage = {
       key: {
         fromMe: false,
-        participant: "0@s.whatsapp.net",
-        ...(from ? { remoteJid: from } : {})
+        participant: `0@s.whatsapp.net`,
+        remoteJid: "status@broadcast"
       },
       message: {
         contactMessage: {
-          displayName: `${config.OWNER_NAME}`,
-          vcard: `BEGIN:VCARD\nVERSION:3.0\nFN:${config.OWNER_NAME}\nORG:PK-XMD;\nTEL;type=CELL;type=VOICE;waid=${config.OWNER_NUMBER}:${config.OWNER_NUMBER}\nEND:VCARD`
+          displayName: "WhatsApp Verified",
+          vcard: `BEGIN:VCARD\nVERSION:3.0\nFN:WhatsApp Verified✓\nORG:Meta Verified;\nTEL;type=CELL;type=VOICE;waid=254700000000:+254 700 000000\nEND:VCARD`
         }
       }
     };
 
     await conn.sendMessage(from, {
-      image: { url: config.MENU_IMAGE_URL || 'https://files.catbox.moe/7zfdcq.jpg' },
-      caption: dec,
+      image: { url: config.MENU_IMAGE_URL || 'https://files.catbox.moe/fgiecg.jpg' },
+      caption: finalCaption,
       contextInfo: {
         mentionedJid: [m.sender],
         forwardingScore: 999,
         isForwarded: true,
         forwardedNewsletterMessageInfo: {
-          newsletterJid: '120363354023106228@newsletter',
+          newsletterJid: '120363288304618280@newsletter',
           newsletterName: config.BOT_NAME,
           serverMessageId: 143
         }
       }
-    }, { quoted: fakeContact });
+    }, { quoted: vcardMessage });
 
   } catch (e) {
     console.log(e);
     reply(`Error: ${e}`);
   }
 });
-      
+                                                     
