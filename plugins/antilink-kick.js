@@ -61,7 +61,7 @@ cmd({
       await conn.sendMessage(from, { delete: m.key }, { quoted: m });
 
       await conn.sendMessage(from, {
-        text: `⚠️ Boss i don't have time your links am PK-XMD.\n@${sender.split('@')[0]} byeee remember me😂🔥👑. 🚫`,
+        text: `⚠️ Boss i don't have time for  your links am PK-XMD.\n@${sender.split('@')[0]} byeee remember me😂🔥👑. 🚫`,
         mentions: [sender],
         contextInfo: {
           externalAdReply: {
