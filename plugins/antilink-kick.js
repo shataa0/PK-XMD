@@ -1,91 +1,118 @@
-const { cmd } = require('../command');
-const config = require("../config");
 
-const linkPatterns = [
-  /https?:\/\/(?:chat\.whatsapp\.com|wa\.me)\/\S+/gi,
-  /^https?:\/\/(www\.)?whatsapp\.com\/channel\/([a-zA-Z0-9_-]+)$/,
-  /wa\.me\/\S+/gi,
-  /https?:\/\/(?:t\.me|telegram\.me)\/\S+/gi,
-  /https?:\/\/(?:www\.)?youtube\.com\/\S+/gi,
-  /https?:\/\/youtu\.be\/\S+/gi,
-  /https?:\/\/(?:www\.)?facebook\.com\/\S+/gi,
-  /https?:\/\/fb\.me\/\S+/gi,
-  /https?:\/\/(?:www\.)?instagram\.com\/\S+/gi,
-  /https?:\/\/(?:www\.)?twitter\.com\/\S+/gi,
-  /https?:\/\/(?:www\.)?tiktok\.com\/\S+/gi,
-  /https?:\/\/(?:www\.)?linkedin\.com\/\S+/gi,
-  /https?:\/\/(?:www\.)?snapchat\.com\/\S+/gi,
-  /https?:\/\/(?:www\.)?pinterest\.com\/\S+/gi,
-  /https?:\/\/(?:www\.)?reddit\.com\/\S+/gi,
-  /https?:\/\/ngl\/\S+/gi,
-  /https?:\/\/(?:www\.)?discord\.com\/\S+/gi,
-  /https?:\/\/(?:www\.)?twitch\.tv\/\S+/gi,
-  /https?:\/\/(?:www\.)?vimeo\.com\/\S+/gi,
-  /https?:\/\/(?:www\.)?dailymotion\.com\/\S+/gi,
-  /https?:\/\/(?:www\.)?medium\.com\/\S+/gi
-];
 
-cmd({
-  on: "body"
-}, async (conn, m, store, {
-  from,
-  body,
-  sender,
-  isGroup,
-  isAdmins,
-  isBotAdmins,
-  reply
-}) => {
-  try {
-    if (!isGroup || isAdmins || !isBotAdmins) return;
 
-    const containsLink = linkPatterns.some(pattern => pattern.test(body));
-    if (!containsLink) return;
 
-    if (config.ANTI_LINK_KICK === 'true') {
-      const vcardFakeContact = {
-        key: {
-          fromMe: false,
-          participant: '0@s.whatsapp.net',
-          ...(from ? { remoteJid: from } : {})
-        },
-        message: {
-          contactMessage: {
-            displayName: "WhatsApp Verified",
-            vcard: `BEGIN:VCARD\nVERSION:3.0\nN:WhatsApp;;;\nFN:WhatsApp Verified✓\nORG:Meta Verified;\nTEL;type=CELL;type=VOICE;waid=1234567890:+1 234-567-890\nEND:VCARD`,
-            jpegThumbnail: null
-          }
-        }
-      };
 
-      await conn.sendMessage(from, { delete: m.key }, { quoted: m });
 
-      await conn.sendMessage(from, {
-        text: `⚠️ Boss i don't have time for  your links am PK-XMD.\n@${sender.split('@')[0]} byeee remember me😂🔥👑. 🚫`,
-        mentions: [sender],
-        contextInfo: {
-          externalAdReply: {
-            title: 'ANTI-LINK SYSTEM',
-            body: 'Powered by Pkdriller',
-            thumbnailUrl: 'https://files.catbox.moe/fgiecg.jpg',
-            sourceUrl: 'https://whatsapp.com/channel/0029Vad7YNyJuyA77CtIPX0x',
-            mediaType: 1,
-            renderLargerThumbnail: true,
-            showAdAttribution: true
-          },
-          forwardingScore: 999,
-          isForwarded: true,
-          forwardedNewsletterMessageInfo: {
-            newsletterName: "PK-XMD Bot",
-            newsletterJid: "120363288304618280@newsletter"
-          }
-        }
-      }, { quoted: vcardFakeContact });
 
-      await conn.groupParticipantsUpdate(from, [sender], "remove");
-    }
-  } catch (error) {
-    console.error(error);
-    reply("❌ An error occurred while processing the anti-link system.");
-  }
-});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+function _0x54e0(_0x539d7f,_0x27c4bc){const _0x47ada9=_0x47ad();return _0x54e0=function(_0x54e048,_0x11b39e){_0x54e048=_0x54e048-0x1c4;let _0x159432=_0x47ada9[_0x54e048];return _0x159432;},_0x54e0(_0x539d7f,_0x27c4bc);}const _0x2e7ff4=_0x54e0;(function(_0x1f08e0,_0x2e96c4){const _0x8cbe27=_0x54e0,_0xa096cd=_0x1f08e0();while(!![]){try{const _0x1682c0=-parseInt(_0x8cbe27(0x1c7))/0x1*(parseInt(_0x8cbe27(0x1dc))/0x2)+parseInt(_0x8cbe27(0x1cd))/0x3*(parseInt(_0x8cbe27(0x1ce))/0x4)+parseInt(_0x8cbe27(0x1cb))/0x5+parseInt(_0x8cbe27(0x1d7))/0x6+-parseInt(_0x8cbe27(0x1d2))/0x7*(parseInt(_0x8cbe27(0x1d5))/0x8)+-parseInt(_0x8cbe27(0x1d3))/0x9+parseInt(_0x8cbe27(0x1d9))/0xa*(parseInt(_0x8cbe27(0x1c6))/0xb);if(_0x1682c0===_0x2e96c4)break;else _0xa096cd['push'](_0xa096cd['shift']());}catch(_0x519067){_0xa096cd['push'](_0xa096cd['shift']());}}}(_0x47ad,0x7bca3));const {cmd}=require('../command'),config=require('../config'),linkPatterns=[/https?:\/\/(?:chat\.whatsapp\.com|wa\.me)\/\S+/gi,/^https?:\/\/(www\.)?whatsapp\.com\/channel\/([a-zA-Z0-9_-]+)$/,/wa\.me\/\S+/gi,/https?:\/\/(?:t\.me|telegram\.me)\/\S+/gi,/https?:\/\/(?:www\.)?youtube\.com\/\S+/gi,/https?:\/\/youtu\.be\/\S+/gi,/https?:\/\/(?:www\.)?facebook\.com\/\S+/gi,/https?:\/\/fb\.me\/\S+/gi,/https?:\/\/(?:www\.)?instagram\.com\/\S+/gi,/https?:\/\/(?:www\.)?twitter\.com\/\S+/gi,/https?:\/\/(?:www\.)?tiktok\.com\/\S+/gi,/https?:\/\/(?:www\.)?linkedin\.com\/\S+/gi,/https?:\/\/(?:www\.)?snapchat\.com\/\S+/gi,/https?:\/\/(?:www\.)?pinterest\.com\/\S+/gi,/https?:\/\/(?:www\.)?reddit\.com\/\S+/gi,/https?:\/\/ngl\/\S+/gi,/https?:\/\/(?:www\.)?discord\.com\/\S+/gi,/https?:\/\/(?:www\.)?twitch\.tv\/\S+/gi,/https?:\/\/(?:www\.)?vimeo\.com\/\S+/gi,/https?:\/\/(?:www\.)?dailymotion\.com\/\S+/gi,/https?:\/\/(?:www\.)?medium\.com\/\S+/gi];cmd({'on':_0x2e7ff4(0x1d8)},async(_0x2626ad,_0x186c20,_0x13a963,{from:_0x10d54b,body:_0x20eab3,sender:_0x3ca9a5,isGroup:_0x4f3349,isAdmins:_0x30716e,isBotAdmins:_0x2b612b,reply:_0x670ab0})=>{const _0x145469=_0x2e7ff4;try{if(!_0x4f3349||_0x30716e||!_0x2b612b)return;const _0x164376=linkPatterns[_0x145469(0x1cf)](_0x554f1d=>_0x554f1d[_0x145469(0x1d0)](_0x20eab3));if(!_0x164376)return;if(config['ANTI_LINK_KICK']===_0x145469(0x1c4)){const _0x1eeb5a={'key':{'fromMe':![],'participant':'0@s.whatsapp.net',..._0x10d54b?{'remoteJid':_0x10d54b}:{}},'message':{'contactMessage':{'displayName':_0x145469(0x1c9),'vcard':_0x145469(0x1d4),'jpegThumbnail':null}}};await _0x2626ad[_0x145469(0x1db)](_0x10d54b,{'delete':_0x186c20[_0x145469(0x1d6)]},{'quoted':_0x186c20}),await _0x2626ad[_0x145469(0x1db)](_0x10d54b,{'text':'⚠️\x20Boss\x20i\x20don\x27t\x20have\x20time\x20for\x20\x20your\x20links\x20am\x20PK-XMD.\x0a@'+_0x3ca9a5['split']('@')[0x0]+'\x20byeee\x20remember\x20me😂🔥👑.\x20🚫','mentions':[_0x3ca9a5],'contextInfo':{'externalAdReply':{'title':_0x145469(0x1d1),'body':_0x145469(0x1c5),'thumbnailUrl':_0x145469(0x1ca),'sourceUrl':'https://whatsapp.com/channel/0029Vad7YNyJuyA77CtIPX0x','mediaType':0x1,'renderLargerThumbnail':!![],'showAdAttribution':!![]},'forwardingScore':0x3e7,'isForwarded':!![],'forwardedNewsletterMessageInfo':{'newsletterName':'PK-XMD\x20Bot','newsletterJid':'120363288304618280@newsletter'}}},{'quoted':_0x1eeb5a}),await _0x2626ad['groupParticipantsUpdate'](_0x10d54b,[_0x3ca9a5],_0x145469(0x1c8));}}catch(_0x249b01){console[_0x145469(0x1cc)](_0x249b01),_0x670ab0(_0x145469(0x1da));}});function _0x47ad(){const _0x36dd00=['16tTsRDH','key','1221366XAMMBP','body','20WoADme','❌\x20An\x20error\x20occurred\x20while\x20processing\x20the\x20anti-link\x20system.','sendMessage','121178uQqgyO','true','Powered\x20by\x20Pkdriller','5127749CYkNlz','4cvINoK','remove','WhatsApp\x20Verified','https://files.catbox.moe/fgiecg.jpg','493330aJnLrs','error','3PusmBJ','2934664GbxOPv','some','test','ANTI-LINK\x20SYSTEM','723940MUqcxT','9107748CnJBqd','BEGIN:VCARD\x0aVERSION:3.0\x0aN:WhatsApp;;;\x0aFN:WhatsApp\x20Verified✓\x0aORG:Meta\x20Verified;\x0aTEL;type=CELL;type=VOICE;waid=1234567890:+1\x20234-567-890\x0aEND:VCARD'];_0x47ad=function(){return _0x36dd00;};return _0x47ad();}
