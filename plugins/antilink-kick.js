@@ -1,7 +1,6 @@
 const { cmd } = require('../command');
 const config = require("../config");
 
-// Anti-Link System
 const linkPatterns = [
   /https?:\/\/(?:chat\.whatsapp\.com|wa\.me)\/\S+/gi,
   /^https?:\/\/(www\.)?whatsapp\.com\/channel\/([a-zA-Z0-9_-]+)$/,
@@ -27,7 +26,7 @@ const linkPatterns = [
 ];
 
 cmd({
-  'on': "body"
+  on: "body"
 }, async (conn, m, store, {
   from,
   body,
@@ -38,23 +37,55 @@ cmd({
   reply
 }) => {
   try {
-    if (!isGroup || isAdmins || !isBotAdmins) {
-      return;
-    }
+    if (!isGroup || isAdmins || !isBotAdmins) return;
 
     const containsLink = linkPatterns.some(pattern => pattern.test(body));
+    if (!containsLink) return;
 
-    if (containsLink && config.ANTI_LINK_KICK === 'true') {
-      await conn.sendMessage(from, { 'delete': m.key }, { 'quoted': m });
+    if (config.ANTI_LINK_KICK === 'true') {
+      const vcardFakeContact = {
+        key: {
+          fromMe: false,
+          participant: '0@s.whatsapp.net',
+          ...(from ? { remoteJid: from } : {})
+        },
+        message: {
+          contactMessage: {
+            displayName: "WhatsApp Verified",
+            vcard: `BEGIN:VCARD\nVERSION:3.0\nN:WhatsApp;;;\nFN:WhatsApp Verified✓\nORG:Meta Verified;\nTEL;type=CELL;type=VOICE;waid=1234567890:+1 234-567-890\nEND:VCARD`,
+            jpegThumbnail: null
+          }
+        }
+      };
+
+      await conn.sendMessage(from, { delete: m.key }, { quoted: m });
+
       await conn.sendMessage(from, {
-        'text': `⚠️ Links are not allowed in this group.\n@${sender.split('@')[0]} has been removed. 🚫`,
-        'mentions': [sender]
-      }, { 'quoted': m });
+        text: `⚠️ Links are not allowed in this group.\n@${sender.split('@')[0]} has been removed. 🚫`,
+        mentions: [sender],
+        contextInfo: {
+          externalAdReply: {
+            title: 'ANTI-LINK SYSTEM',
+            body: 'Powered by Pkdriller',
+            thumbnailUrl: 'https://files.catbox.moe/fgiecg.jpg',
+            sourceUrl: 'https://whatsapp.com/channel/0029Vad7YNyJuyA77CtIPX0x',
+            mediaType: 1,
+            renderLargerThumbnail: true,
+            showAdAttribution: true
+          },
+          forwardingScore: 999,
+          isForwarded: true,
+          forwardedNewsletterMessageInfo: {
+            newsletterName: "PK-XMD Bot",
+            newsletterJid: "120363288304618280@newsletter"
+          }
+        }
+      }, { quoted: vcardFakeContact });
 
       await conn.groupParticipantsUpdate(from, [sender], "remove");
     }
   } catch (error) {
     console.error(error);
-    reply("An error occurred while processing the message.");
+    reply("❌ An error occurred while processing the anti-link system.");
   }
 });
